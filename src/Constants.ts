@@ -6,7 +6,7 @@ export const Constants = {
 
     /**
      * Factor of average number of entities a glyph should represent before
-     * it is considered to be a {@linkplain Glyph#isBig() big glyph}.
+     * it is considered to be a {@link Glyph big glyph}.
      */
     BIG_GLYPH_FACTOR: 100,
 
@@ -35,18 +35,18 @@ export const Constants = {
 
     /**
      * Whether merge events are to be created for all pairs of glyphs, or only
-     * the first one. Setting this to {@code true} implies a performance hit.
+     * the first one. Setting this to `true` implies a performance hit.
      * <p>
      * This constant will also determine whether all out of cell events are
-     * put into the global event queue ({@code true}), or not.
+     * put into the global event queue (`true`), or not.
      * <p>
-     * high values when setting this to {@code true}, or you need to allocate
+     * high values when setting this to `true`, or you need to allocate
      * more memory to the clustering process for large data sets.
      */
     ROBUST: false,
 
     /**
-     * When {@link #ROBUST} is {@code false}, this flag toggles behavior where
+     * When {@link #ROBUST} is `false`, this flag toggles behavior where
      * glyphs track which glyphs think they'll merge with them first. Merge
      * events are then updated for tracking glyphs, as glyphs merge.
      * <p>
@@ -56,10 +56,9 @@ export const Constants = {
 
     /**
      * Whether messages should be logged at all. This overrides logging
-     * configuration from {@code logging.properties} (but only negatively,
+     * configuration from `logging.properties` (but only negatively,
      *
-     * it will not log messages when this is disabled in
-     * {@code logging.properties}).
+     * it will not log messages when this is disabled in `logging.properties`.
      */
     LOGGING_ENABLED: true,
 

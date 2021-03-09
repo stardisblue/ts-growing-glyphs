@@ -1,5 +1,5 @@
-import {Level, Logger} from './Logger';
-import {Timers, TimersUnits} from './Utils';
+import {Level, Logger} from "./Logger";
+import {Timers, TimersUnits} from "./Utils";
 
 export class Timer {
     totalElapsed: number;
@@ -30,7 +30,7 @@ export class Timer {
                     this.totalElapsed,
                     TimersUnits.SECONDS
                 )} seconds (wall clock time${
-                    this.count === 1 ? '' : `, ${this.count} timings`
+                    this.count === 1 ? "" : `, ${this.count} timings`
                 })`
             );
         } else {
@@ -39,7 +39,7 @@ export class Timer {
                     this.totalElapsed,
                     TimersUnits.SECONDS
                 )} seconds (wall clock time ${
-                    this.count === 1 ? '' : `, ${this.count}`
+                    this.count === 1 ? "" : `, ${this.count}`
                 })`
             );
         }

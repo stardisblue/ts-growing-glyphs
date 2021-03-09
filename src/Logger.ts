@@ -1,4 +1,4 @@
-import {createWriteStream, WriteStream} from 'fs';
+import {createWriteStream, WriteStream} from "fs";
 
 export class Logger {
     static writeStream: WriteStream | null = null;

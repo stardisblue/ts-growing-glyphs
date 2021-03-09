@@ -1,8 +1,8 @@
-import {Constants} from './Constants';
-import {Glyph} from './Glyph';
-import {Side} from './OutOfCell';
-import {Rectangle2D} from './Rectangle2D';
-import {Stats, Timers, Utils} from './Utils';
+import {Constants} from "./Constants";
+import {Glyph} from "./Glyph";
+import {Side} from "./OutOfCell";
+import {Rectangle2D} from "./Rectangle2D";
+import {Stats, Timers, Utils} from "./Utils";
 
 export class QuadTree {
     cell: Rectangle2D;
@@ -17,12 +17,12 @@ export class QuadTree {
         this.parent = null;
         this.isOrphan = false;
         this.children = null;
-        this.glyphs = new Array();
-        this.neighbors = Side.values().map(() => new Array());
+        this.glyphs = [];
+        this.neighbors = Side.values().map(() => []);
     }
 
     getSide(side: Side): any {
-        throw new Error('Method not implemented.');
+        throw new Error("Method not implemented.");
     }
 
     getRectangle() {
@@ -45,9 +45,9 @@ export class QuadTree {
     }
 
     getLeaves() {
-        Timers.start('[QuadTree] getLeaves');
-        const leaves: QuadTree[] = new Array();
-        const considering: QuadTree[] = new Array();
+        Timers.start("[QuadTree] getLeaves");
+        const leaves: QuadTree[] = [];
+        const considering: QuadTree[] = [];
         considering.push(this);
         while (considering.length !== 0) {
             const cell = considering.shift();
@@ -57,7 +57,7 @@ export class QuadTree {
                 considering.push(...cell.children);
             }
         }
-        Timers.stop('[QuadTree] getLeaves');
+        Timers.stop("[QuadTree] getLeaves");
         return leaves;
     }
 
@@ -97,19 +97,19 @@ export class QuadTree {
      * @return Whether center has been inserted.
      */
     insertCenterOf(glyph: Glyph) {
-        Stats.count('QuadTree insertCenterOf');
+        Stats.count("QuadTree insertCenterOf");
         if (
             glyph.x < this.cell.getMinX() ||
             glyph.x > this.cell.getMaxX() ||
             glyph.y < this.cell.getMinY() ||
             glyph.y > this.cell.getMaxY()
         ) {
-            Stats.count('QuadTree insertCenterOf', false);
+            Stats.count("QuadTree insertCenterOf", false);
             return false;
         }
-        Stats.count('QuadTree insertCenterOf', true);
+        Stats.count("QuadTree insertCenterOf", true);
         // can we insert here?
-        Timers.start('[QuadTree] insert');
+        Timers.start("[QuadTree] insert");
         if (this.isLeaf() && this.glyphs.length < Constants.MAX_GLYPHS_PER_CELL) {
             if (!this.glyphs.includes(glyph)) {
                 this.glyphs.push(glyph);
@@ -125,12 +125,12 @@ export class QuadTree {
         this.children[Side.quadrant(this.cell, glyph.x, glyph.y)].insertCenterOf(
             glyph
         );
-        Timers.stop('[QuadTree] insert');
+        Timers.stop("[QuadTree] insert");
         return true;
     }
 
     split() {
-        Timers.start('[QuadTree] split');
+        Timers.start("[QuadTree] split");
         this.splitCell();
         // possibly distribute glyphs
         if (this.glyphs.length !== 0) {
@@ -143,14 +143,14 @@ export class QuadTree {
             this.glyphs = null;
         }
         // notify listeners
-        Timers.stop('[QuadTree] split');
+        Timers.stop("[QuadTree] split");
     }
 
     splitCell() {
         if (!this.isLeaf())
-            throw new Error('cannot split cell that is already split');
+            throw new Error("cannot split cell that is already split");
 
-        Stats.count('QuadTree split cell');
+        Stats.count("QuadTree split cell");
         this.children = new Array(4);
         const x = this.getX();
         const y = this.getY();
@@ -158,7 +158,7 @@ export class QuadTree {
         const h = this.getHeight();
 
         if (w / 2 < Constants.MIN_CELL_SIZE || h / 2 < Constants.MIN_CELL_SIZE)
-            throw new Error('cannot split a tiny cell');
+            throw new Error("cannot split a tiny cell");
 
         for (let i = 0; i < 4; ++i) {
             this.children[i] = new QuadTree(

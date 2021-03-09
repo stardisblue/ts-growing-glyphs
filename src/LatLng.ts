@@ -1,5 +1,5 @@
-import {EPSG3857} from './EPSG3857';
-import {Point2D} from './Point2D';
+import {EPSG3857} from "./EPSG3857";
+import {Point2D} from "./Point2D";
 
 export class LatLng {
     lat: any;

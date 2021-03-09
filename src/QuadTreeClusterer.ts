@@ -1,13 +1,13 @@
-import {Stats, Timers, Utils} from './Utils';
-import {Constants} from './Constants';
-import {Level, Logger} from './Logger';
-import {QuadTree} from './QuadTree';
-import {Glyph} from './Glyph';
-import {MultiQueue} from './MultiQueue';
-import {HierarchicalClustering} from './HierarchicalClustering';
-import {FirstMergeRecorder} from './FirstMergeRecorder';
-import {OutOfCell, Side} from './OutOfCell';
-import {Stat} from './Stat';
+import {Stats, Timers, Utils} from "./Utils";
+import {Constants} from "./Constants";
+import {Level, Logger} from "./Logger";
+import {QuadTree} from "./QuadTree";
+import {Glyph} from "./Glyph";
+import {MultiQueue} from "./MultiQueue";
+import {HierarchicalClustering} from "./HierarchicalClustering";
+import {FirstMergeRecorder} from "./FirstMergeRecorder";
+import {OutOfCell, Side} from "./OutOfCell";
+import {Stat} from "./Stat";
 
 const LOGGER = Constants.LOGGING_ENABLED ? new Logger() : null;
 
@@ -35,19 +35,19 @@ export class QuadTreeClusterer {
         const defaultLevel = LOGGER === null ? null : LOGGER.getLevel();
 
         if (LOGGER !== null) {
-            LOGGER.log(Level.FINER, 'ENTRY into AgglomerativeClustering#cluster()');
+            LOGGER.log(Level.FINER, "ENTRY into AgglomerativeClustering#cluster()");
             LOGGER.log(
                 Level.FINE,
                 `clustring using ${[
-                    Constants.ROBUST ? 'ROBUST' : '',
-                    Constants.TRACK && !Constants.ROBUST ? 'TRACK' : '',
-                    !Constants.ROBUST && !Constants.TRACK ? 'FIRSTT MERGE ONLY' : '',
-                    'NO BUCKETING',
-                ].join(' + ')} strategy`
+                    Constants.ROBUST ? "ROBUST" : "",
+                    Constants.TRACK && !Constants.ROBUST ? "TRACK" : "",
+                    !Constants.ROBUST && !Constants.TRACK ? "FIRSTT MERGE ONLY" : "",
+                    "NO BUCKETING",
+                ].join(" + ")} strategy`
             );
             LOGGER.log(
                 Level.FINE,
-                'using the Linear Area Growing Circles grow function'
+                "using the Linear Area Growing Circles grow function"
             );
             LOGGER.log(
                 Level.FINE,
@@ -58,15 +58,15 @@ export class QuadTreeClusterer {
             if (LOGGER.isLoggable(Level.FINE)) {
                 let n = 0;
                 for (const leaf of this.tree.getLeaves()) {
-                    Stats.record('glyphs per cell', leaf.getGlyphs().length);
+                    Stats.record("glyphs per cell", leaf.getGlyphs().length);
                     for (const glyph of leaf.getGlyphs()) {
                         n += glyph.n;
                     }
                 }
-                Stats.record('total # works', n);
+                Stats.record("total # works", n);
             }
         }
-        if (Constants.TIMERS_ENABLED) Timers.start('clustering');
+        if (Constants.TIMERS_ENABLED) Timers.start("clustering");
 
         // construct a queue, put everything in there - 10x number of glyphs
         // appears to be a good estimate for needed capacity without bucketing
@@ -89,9 +89,9 @@ export class QuadTreeClusterer {
 
                 if (LOGGER !== null) LOGGER.log(Level.FINEST, glyphs[i].toString());
                 this.rec.from(glyphs[i]);
-                if (Constants.TIMERS_ENABLED) Timers.start('first merge recording 1');
+                if (Constants.TIMERS_ENABLED) Timers.start("first merge recording 1");
                 this.rec.record(glyphs, i + 1, glyphs.length);
-                if (Constants.TIMERS_ENABLED) Timers.stop('first merge recording 1');
+                if (Constants.TIMERS_ENABLED) Timers.stop("first merge recording 1");
                 this.rec.addEventsTo(q, LOGGER);
 
                 // add events for when a glyph grows out of its cell
@@ -109,14 +109,14 @@ export class QuadTreeClusterer {
                 state.glyphSize.record(glyphs[i].n);
                 if (!glyphs[i].isAlive()) {
                     if (LOGGER !== null) {
-                        LOGGER.log(Level.SEVERE, 'unexpected dead glyph in input');
+                        LOGGER.log(Level.SEVERE, "unexpected dead glyph in input");
                     }
                     return null;
                 }
                 // create clustering leaves for all glyphs, count them as alive
             }
         }
-        throw new Error('To implement');
+        throw new Error("To implement");
     }
 }
 

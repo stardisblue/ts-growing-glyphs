@@ -1,5 +1,11 @@
+import {Glyph} from "./Glyph";
+
 export class Event {
-    constructor() {
-        throw new Error('To Implement');
+    protected glyphs: Glyph[];
+    private at: number;
+    constructor(at: number, glyphCapacity: number) {
+        this.at = at
+        this.glyphs = new Array<Glyph>(glyphCapacity)
+        throw new Error("To Implement");
     }
 }

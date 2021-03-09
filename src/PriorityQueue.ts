@@ -1,4 +1,4 @@
-import TinyQueue from 'tinyqueue';
+import TinyQueue from "tinyqueue";
 
 export class PriorityQueue<T> {
     private _heap: TinyQueue<T>;

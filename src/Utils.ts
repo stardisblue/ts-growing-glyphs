@@ -1,6 +1,7 @@
-import {Level, Logger} from './Logger';
-import {Stat} from './Stat';
-import {Timer} from './Timer';
+import {Level, Logger} from "./Logger";
+import {Stat} from "./Stat";
+import {Timer} from "./Timer";
+import {Rectangle2D} from "./Rectangle2D";
 
 export class Utils {
     static Stats = class Stats {
@@ -88,6 +89,53 @@ export class Utils {
                 return i;
         }
         return -1;
+    }
+
+    static onBorderOf(side: Rectangle2D, rect: Rectangle2D) {
+        return (
+            (side.width === 0 &&
+                (side.x === rect.getMinX() || side.x === rect.getMaxX()) &&
+                side.getMinY() >= rect.getMinY() && side.getMaxY() <= rect.getMaxY()) ||
+            (side.height === 0 &&
+                (side.y == rect.getMinY() || side.y == rect.getMaxY()) &&
+                side.getMinX() >= rect.getMinX() && side.getMaxX() <= rect.getMaxX())
+        );
+    }
+
+    /**
+     * Returns the minimum Euclidean distance between a point and any point in
+     * the given rectangle. This will in particular return -1 when the given
+     * point is contained in the rectangle.
+     */
+    static euclidean(rect: Rectangle2D, px: number, py: number) {
+        if (rect.contains(px, py)) return -1;
+        return this.euclidean2(px, py,
+            this.clamp(px, rect.getMinX(), rect.getMaxX()),
+            this.clamp(py, rect.getMinY(), rect.getMaxY()));
+    }
+
+    /**
+     * Clamp a given value to within the given range.
+     *
+     * @param value Value to clamp.
+     * @param min   Minimum value to return.
+     * @param max   Maximum value to return.
+     * @return The value closest to {@code value} that is within the closed
+     * interval {@code [min, max]}.
+     */
+    private static clamp(value: number, min: number, max: number) {
+        if (value < min) {
+            return min;
+        }
+
+        return Math.min(value, max);
+    }
+
+    /**
+     * Returns the Euclidean distance between two points {@code p} and {@code q}.
+     */
+    private static euclidean2(px: number, py: number, qx: number, qy: number) {
+        return Math.hypot(qx - px, qy - py);
     }
 }
 

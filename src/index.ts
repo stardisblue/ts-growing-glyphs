@@ -1,9 +1,9 @@
-import {Constants} from './Constants';
-import {CsvIO, GGFile, PointIO} from './GGFile';
-import {Level, Logger} from './Logger';
-import {QuadTree} from './QuadTree';
-import {QuadTreeClusterer} from './QuadTreeClusterer';
-import {Utils} from './Utils';
+import {Constants} from "./Constants";
+import {CsvIO, GGFile, PointIO} from "./GGFile";
+import {Level, Logger} from "./Logger";
+import {QuadTree} from "./QuadTree";
+import {QuadTreeClusterer} from "./QuadTreeClusterer";
+import {Utils} from "./Utils";
 
 const LOGGER = Constants.LOGGING_ENABLED ? new Logger() : null;
 
@@ -14,20 +14,20 @@ const LOGGER = Constants.LOGGING_ENABLED ? new Logger() : null;
 async function main(argv: string[]) {
     console.log(argv);
     if (argv.length < 4) {
-        console.log('usage: CLI [INPUT] [algorithm] [stats]');
+        console.log("usage: CLI [INPUT] [algorithm] [stats]");
         return;
     }
 
     const [, , pInput, pAlgorithm, pStats] = argv;
 
     // collect stats ?
-    Constants.STATS_ENABLED = pStats === 'y';
-    if (!Constants.STATS_ENABLED && pStats !== 'n') {
+    Constants.STATS_ENABLED = pStats === "y";
+    if (!Constants.STATS_ENABLED && pStats !== "n") {
         console.error("Stats argument must be either 'y' or 'n'.");
         return;
     }
 
-    Logger.redirectTo('non_regression.txt');
+    Logger.redirectTo("non_regression.txt");
 
     const w = 512;
     const h = 512;
@@ -37,14 +37,14 @@ async function main(argv: string[]) {
 
     Constants.BIG_GLYPHS = false;
     Constants.ROBUST = false;
-    if (pAlgorithm === 'quad') {
+    if (pAlgorithm === "quad") {
         Constants.ROBUST = true;
-    } else if (pAlgorithm === 'big') {
+    } else if (pAlgorithm === "big") {
         Constants.BIG_GLYPHS = true;
     }
 
     const file = new GGFile(pInput);
-    if (file.getName().endsWith('.csv') || file.getName().endsWith('.tsv')) {
+    if (file.getName().endsWith(".csv") || file.getName().endsWith(".tsv")) {
         await CsvIO.read(file, tree);
     } else {
         await PointIO.read(file, tree);
@@ -54,18 +54,18 @@ async function main(argv: string[]) {
     Utils.Timers.reset();
 
     if (LOGGER !== null) {
-        LOGGER.log(Level.FINE, 'clustering using the QuadTree Clusterer algorithm');
+        LOGGER.log(Level.FINE, "clustering using the QuadTree Clusterer algorithm");
         LOGGER.log(
             Level.FINE,
-            `${Constants.STATS_ENABLED ? '' : 'not'}collecting stats`
+            `${Constants.STATS_ENABLED ? "" : "not"}collecting stats`
         );
         LOGGER.log(
             Level.FINE,
-            `${Constants.ROBUST ? '' : 'not'}using QUAD+ optimization`
+            `${Constants.ROBUST ? "" : "not"}using QUAD+ optimization`
         );
         LOGGER.log(
             Level.FINE,
-            `${Constants.BIG_GLYPHS ? '' : 'not'}using big glyph optimization`
+            `${Constants.BIG_GLYPHS ? "" : "not"}using big glyph optimization`
         );
     }
     clusterer.cluster();

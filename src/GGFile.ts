@@ -1,11 +1,11 @@
-import {Constants} from './Constants';
-import {Level, Logger} from './Logger';
-import {QuadTree} from './QuadTree';
-import {Utils} from './Utils';
-import readline from 'readline';
-import {createReadStream, ReadStream} from 'fs';
-import {LatLng} from './LatLng';
-import {Glyph} from './Glyph';
+import {Constants} from "./Constants";
+import {Level, Logger} from "./Logger";
+import {QuadTree} from "./QuadTree";
+import {Utils} from "./Utils";
+import readline from "readline";
+import {createReadStream, ReadStream} from "fs";
+import {LatLng} from "./LatLng";
+import {Glyph} from "./Glyph";
 
 export class GGFile {
     path: string;
@@ -29,9 +29,9 @@ export class CsvIO {
     private static LOGGER = Constants.LOGGING_ENABLED ? new Logger() : null;
 
     static async read(file: GGFile, tree: QuadTree) {
-        this.LOGGER?.log(Level.FINE, 'ENTRY into CsvIO#read()');
+        this.LOGGER?.log(Level.FINE, "ENTRY into CsvIO#read()");
 
-        if (Constants.TIMERS_ENABLED) Utils.Timers.start('reading file');
+        if (Constants.TIMERS_ENABLED) Utils.Timers.start("reading file");
 
         const ignoredRead = [0, 0];
 
@@ -41,18 +41,18 @@ export class CsvIO {
         let latInd: number = 0;
         let lngInd: number = 0;
         let nInd: number = 0;
-        let splitOn: string | RegExp = '\t';
+        let splitOn: string | RegExp = "\t";
         const read = new Map<string, { p: LatLng; weight: number }>();
 
         let titleLine = true;
 
         for await (const line of rl) {
             if (titleLine) {
-                splitOn = line.indexOf('\t') > 0 ? '\t' : /\\s*,\\s*/;
+                splitOn = line.indexOf("\t") > 0 ? "\t" : /\\s*,\\s*/;
                 titleCols = line.split(splitOn);
-                latInd = Utils.indexOf(titleCols, 'latitude');
-                lngInd = Utils.indexOf(titleCols, 'longitude');
-                nInd = Utils.indexOf(titleCols, 'n');
+                latInd = Utils.indexOf(titleCols, "latitude");
+                lngInd = Utils.indexOf(titleCols, "longitude");
+                nInd = Utils.indexOf(titleCols, "n");
                 if (latInd < 0 || lngInd < 0)
                     throw new Error("need columns 'latitude' and 'longitude' in data");
 
@@ -63,8 +63,8 @@ export class CsvIO {
             const cols = line.split(splitOn);
             if (
                 cols.length <= Math.max(latInd, lngInd) ||
-                cols[latInd] === 'NULL' ||
-                cols[lngInd] === 'NULL'
+                cols[latInd] === "NULL" ||
+                cols[lngInd] === "NULL"
             ) {
                 ignoredRead[0]++;
                 continue;
@@ -91,14 +91,14 @@ export class CsvIO {
         this.LOGGER?.log(Level.INFO, `loaded ${read.size} locations`);
 
         if (Constants.TIMERS_ENABLED)
-            Utils.Timers.log('reading file', CsvIO.LOGGER);
+            Utils.Timers.log("reading file", CsvIO.LOGGER);
         if (Constants.LOGGING_ENABLED)
             this.LOGGER?.log(
                 Level.INFO,
                 `read ${ignoredRead[1]} entries and ignored ${ignoredRead[0]}`
             );
         if (Constants.LOGGING_ENABLED)
-            this.LOGGER?.log(Level.FINE, 'RETURN from Csv#read()');
+            this.LOGGER?.log(Level.FINE, "RETURN from Csv#read()");
 
         return ignoredRead[1];
     }
@@ -106,6 +106,6 @@ export class CsvIO {
 
 export class PointIO {
     static read(file: GGFile, tree: QuadTree) {
-        throw new Error('To implement');
+        throw new Error("To implement");
     }
 }

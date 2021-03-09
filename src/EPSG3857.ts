@@ -1,5 +1,5 @@
-import {LatLng} from './LatLng';
-import {Point2D} from './Point2D';
+import {LatLng} from "./LatLng";
+import {Point2D} from "./Point2D";
 
 export class EPSG3857 {
     static R = 6378137;

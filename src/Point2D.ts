@@ -17,6 +17,6 @@ export class Point2D {
      * @deprecated use y
      */
     getY(): number {
-        throw new Error('Method not implemented.');
+        throw new Error("Method not implemented.");
     }
 }

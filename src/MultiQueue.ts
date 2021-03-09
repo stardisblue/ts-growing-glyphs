@@ -1,5 +1,5 @@
-import {PriorityQueue} from './PriorityQueue';
-import {Event} from './Event';
+import {PriorityQueue} from "./PriorityQueue";
+import {Event} from "./Event";
 
 export class MultiQueue extends PriorityQueue<Event> {
     counts: any[];

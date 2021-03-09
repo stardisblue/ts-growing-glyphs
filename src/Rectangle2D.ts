@@ -41,4 +41,24 @@ export class Rectangle2D {
     getMinX(): number {
         return this.x;
     }
+
+    /**
+     * @deprecated use {@link width} instead
+     */
+    getWidth() {
+        return this.width;
+    }
+
+    /**
+     * @deprecated use {@link height} instead
+     */
+    getHeight() {
+        return this.height;
+    }
+
+    contains(x: number, y: number) {
+        const x0 = this.x;
+        const y0 = this.y;
+        return x >= x0 && y >= y0 && x < x0 + this.width && y < y0 + this.height;
+    }
 }
