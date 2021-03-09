@@ -1,15 +1,20 @@
-import { Point2D } from './Point2D';
+import {EPSG3857} from './EPSG3857';
+import {Point2D} from './Point2D';
 
 export class LatLng {
-  constructor(lat: number, lng: number) {
-    throw new Error('to implement');
-  }
+    lat: any;
+    lng: any;
 
-  valueOf(): string {
-    throw new Error('to implement');
-  }
+    constructor(lat: number, lng: number) {
+        this.lat = lat;
+        this.lng = lng;
+    }
 
-  toPoint(zoom: number): Point2D {
-    throw new Error('Method not implemented.');
-  }
+    toString(): string {
+        return `LatLng[${this.lat},${this.lng}]`;
+    }
+
+    toPoint(zoom: number): Point2D {
+        return EPSG3857.latLngToPoint(this, zoom);
+    }
 }

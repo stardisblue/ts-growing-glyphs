@@ -8,11 +8,14 @@
     "typescript": "^4.2.3"
   },
   "dependencies": {
+    "@types/leaflet": "^1.5.23",
+    "leaflet": "^1.7.1",
     "lodash": "^4.17.21",
     "nodemon": "^2.0.7",
+    "tinyqueue": "^2.0.3",
     "ts-node": "^9.1.1"
   },
   "scripts": {
-    "dev": "nodemon --inspect --config nodemon.json src/index.ts glottovis.tsv quad n"
+    "dev": "nodemon --inspect --config nodemon.json src/index.ts data/glottovis.tsv quad n"
   }
 }

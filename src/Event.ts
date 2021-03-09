@@ -1,5 +1,5 @@
 export class Event {
-  constructor() {
-    throw new Error('To Implement');
-  }
+    constructor() {
+        throw new Error('To Implement');
+    }
 }
