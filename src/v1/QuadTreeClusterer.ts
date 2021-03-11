@@ -6,7 +6,7 @@ import {Glyph} from "./Glyph";
 import {MultiQueue} from "./MultiQueue";
 import {HierarchicalClustering} from "./HierarchicalClustering";
 import {FirstMergeRecorder} from "./FirstMergeRecorder";
-import {OutOfCell, Side} from "./OutOfCell";
+import {Side} from "./OutOfCell";
 import {Stat} from "./Stat";
 
 const LOGGER = Constants.LOGGING_ENABLED ? new Logger() : null;
@@ -99,7 +99,8 @@ export class QuadTreeClusterer {
                     // only create an event when it is not a border of the root
                     if (!Utils.onBorderOf(leaf.getSide(side), rect)) {
                         // now, actually create an OUT_OF_CELL event
-                        glyphs[i].record(new OutOfCell(glyphs[i], leaf, side));
+
+                        // glyphs[i].record(new OutOfCell(glyphs[i], leaf, side));
                     }
                 }
                 glyphs[i].popOutOfCellInto(q, LOGGER);

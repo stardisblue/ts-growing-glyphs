@@ -2,7 +2,8 @@ import {Event} from "./Event";
 import {Rectangle2D} from "./Rectangle2D";
 import {Glyph} from "./Glyph";
 import {QuadTree} from "./QuadTree";
-import {Utils} from "./Utils";
+import {GrowFunction} from "./GrowFunction";
+import {Type} from "./Type";
 
 export class Side {
     static TOP = new Side(0, 1, 0);
@@ -83,35 +84,13 @@ export class OutOfCell extends Event {
             at = GrowFunction.exitAt(glyph, cell, side);
         }
         super(at, 1);
-        this.glyphs[0] = glyph
-        this.cell = cell
-        this.side = side
+        this.glyphs[0] = glyph;
+        this.cell = cell;
+        this.side = side;
+    }
+
+    getType() {
+        return Type.OUT_OF_CELL;
     }
 }
 
-class GrowFunction {
-
-    static exitAt(glyph: Glyph, cell: QuadTree, side: Side) {
-        return this.intersectAt(cell.getSide(side), glyph);
-    }
-
-    private static intersectAt(r: Rectangle2D, g: Glyph) {
-        const d = this.dist(r, g);
-        if (!Number.isFinite(d)) {
-            return d;
-        }
-        return d / this.weight(g);
-    }
-
-    private static dist(rect: Rectangle2D, g: Glyph) {
-        const d = Utils.euclidean(rect, g.x, g.y);
-        if (d < 0) {
-            return Number.NEGATIVE_INFINITY;
-        }
-        return d;
-    }
-
-    private static weight(glyph: Glyph) {
-        return Math.sqrt(glyph.n);
-    }
-}

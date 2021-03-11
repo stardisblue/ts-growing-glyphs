@@ -134,8 +134,22 @@ export class Utils {
     /**
      * Returns the Euclidean distance between two points {@code p} and {@code q}.
      */
-    private static euclidean2(px: number, py: number, qx: number, qy: number) {
+    static euclidean2(px: number, py: number, qx: number, qy: number) {
         return Math.hypot(qx - px, qy - py);
+    }
+
+    /**
+     * Swap two objects from two lists.
+     *
+     * @param listA  First list.
+     * @param indexA Index of item in first list to swap with second.
+     * @param listB  Second list.
+     * @param indexB Index of item in second list to swap with first.
+     */
+    static swap<T>(listA: T[], indexA: number, listB: T[], indexB: number) {
+        const tmp = listA[indexA];
+        listA[indexA] = listB[indexB];
+        listB[indexB] = tmp;
     }
 }
 
