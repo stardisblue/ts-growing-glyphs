@@ -3,7 +3,7 @@
  * @param item
  */
 export function isNumber(item: any): item is number {
-    return typeof item === "number";
+  return typeof item === 'number';
 }
 
 /**
@@ -11,5 +11,5 @@ export function isNumber(item: any): item is number {
  * @param item
  */
 export function isBoolean(item: any): item is boolean {
-    return typeof item === "boolean";
+  return typeof item === 'boolean';
 }

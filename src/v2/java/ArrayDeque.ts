@@ -1,7 +1,3 @@
-import {ArrayList} from "./ArrayList";
+import { ArrayList } from './ArrayList';
 
-export class ArrayDeque<T> extends ArrayList<T> {
-
-
-
-}
+export class ArrayDeque<T> extends ArrayList<T> {}
