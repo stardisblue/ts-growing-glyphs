@@ -36,7 +36,6 @@ export class Logger {
   }
 
   log(level: Level, msg: string) {
-    console.log('haha', msg);
     if (level >= this.level) {
       if (Logger._ps) {
         Logger._ps.println(msg);
