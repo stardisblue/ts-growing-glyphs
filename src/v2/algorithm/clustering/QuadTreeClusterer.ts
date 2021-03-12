@@ -15,6 +15,36 @@ import {Side} from "../../datastructure/events/Side";
 import {OutOfCell} from "../../datastructure/events/OutOfCell";
 import {Event} from "../../datastructure/events/Event";
 import {Type} from "../../datastructure/events/Type";
+import {Stat} from "../../utils/Stat";
+
+/**
+ * Object that is used to easily share state between
+ * {@link QuadTreeClusterer#cluster() cluster} and
+ * PriorityQueue) handleGlyphMerge}.
+ */
+class GlobalState {
+
+    // we have a queue for nested merges, and a temporary array that is reused,
+    // and two sets that are reused somewhere deep in the algorithm
+    readonly nestedMerges: PriorityQueue<GlyphMerge> = new PriorityQueue();
+    readonly createdFromTmp: [HierarchicalClustering, HierarchicalClustering] = [null, null];
+    readonly trackersNeedingUpdate: ArrayList<Glyph> = new ArrayList();
+    readonly orphanedCells: ArrayList<QuadTree> = new ArrayList();
+    // mapping from glyphs to (currently) highest level nodes in resulting clustering
+    readonly map: HashMap<Glyph, HierarchicalClustering>;
+    // finally, create an indication of which glyphs still participate
+    numAlive = 0;
+    // statistic for sizes of currently alive glyphs
+    readonly glyphSize: Stat = new Stat();
+    // list of alive big glyphs; these are not in the QuadTree and thus tracked separately
+    readonly bigGlyphs: ArrayList<Glyph> = new ArrayList(2);
+    // used as output parameter of #processNestedMerges to indicate if a big glyph was merged
+    mergedBigGlyph: boolean;
+
+    constructor(map: HashMap<Glyph, HierarchicalClustering>) {
+        this.map = map;
+    }
+}
 
 const LOGGER = (Constants.LOGGING_ENABLED ? Logger.getLogger("QuadTreeClusterer") : null);
 
@@ -46,14 +76,19 @@ export class QuadTreeClusterer {
 
         if (LOGGER != null) {
             LOGGER.log(Level.FINER, "ENTRY into AgglomerativeClustering#cluster()");
-            // TODO
+            LOGGER.log(Level.FINE, `clustering using ${Utils.join(" + ",
+                (Constants.ROBUST ? "ROBUST" : ""),
+                (Constants.TRACK && !Constants.ROBUST ? "TRACK" : ""),
+                (!Constants.ROBUST && !Constants.TRACK ? "FIRST MERGE ONLY" : ""),
+                "NO BUCKETING")} strategy`);
             // LOGGER.log(Level.FINE, "clustering using {0} strategy", Utils.join(" + ",
             //     (Constants.ROBUST ? "ROBUST" : ""),
             //     (Constants.TRACK && !Constants.ROBUST ? "TRACK" : ""),
             //     (!Constants.ROBUST && !Constants.TRACK ? "FIRST MERGE ONLY" : ""),
             //     "NO BUCKETING"));
             LOGGER.log(Level.FINE, "using the Linear Area Growing Circles grow function");
-            // TODO
+            LOGGER.log(Level.FINE, `QuadTree has ${this.tree.getSize()} nodes and height ${this.tree.getTreeHeight()
+            }, having at most ${Constants.MAX_GLYPHS_PER_CELL} glyphs per cell and cell size at least ${Constants.MIN_CELL_SIZE.toExponential()}`);
             // LOGGER.log(Level.FINE, "QuadTree has {0} nodes and height {1}, having "
             //     + "at most {2} glyphs per cell and cell size at least {3}",
             //     new Object[]{tree.getSize(), tree.getTreeHeight(),
@@ -120,7 +155,7 @@ export class QuadTreeClusterer {
             }
         }
         if (LOGGER != null) {
-            // TODO
+            LOGGER.log(Level.FINE, `created ${q.size()} events initially, for ${state.numAlive} glyphs`);
             // LOGGER.log(Level.FINE, "created {0} events initially, for {1} glyphs",
             //     new Object[]{q.size(), state.numAlive});
         }
@@ -139,7 +174,7 @@ export class QuadTreeClusterer {
                     }
                 }
                 // log about handling this event
-                // TODO
+                LOGGER.log(Level.FINER, `handling ${e.getType()} at ${e.getAt()} involving`);
                 // LOGGER.log(Level.FINER, "handling {0} at {1} involving",
                 //     new Object[]{e.getType(), e.getAt()});
                 for (const glyph of e.getGlyphs()) {
@@ -203,7 +238,9 @@ export class QuadTreeClusterer {
             if (LOGGER.isLoggable(Level.FINE)) {
                 Stats.record("total # works", this.result.getGlyph().getN());
             }
-            // TODO
+            LOGGER.log(Level.FINE, `created ${q.getInsertions()} events, handled ${q.getDeletions()
+            } and discarded ${q.getDiscarded()}; ${
+                q.getInsertions() - q.getDeletions() - q.getDiscarded()} events were never considered`);
             // LOGGER.log(Level.FINE, "created {0} events, handled {1} and discarded "
             //     + "{2}; {3} events were never considered",
             //     new Object[]{q.getInsertions(), q.getDeletions(),
@@ -212,7 +249,8 @@ export class QuadTreeClusterer {
             for (const t of Type.values()) {
                 const tn = t.toString();
                 const s = Stats.get(tn);
-                //TODO
+
+                LOGGER.log(Level.FINE, `→ ${s.getSum()} ${tn}s (${Stats.get(tn + " handled").getSum()} handled, ${Stats.get(tn + " discarded").getSum()} discarded)`);
                 // LOGGER.log(Level.FINE, "→ {1} {0}s ({2} handled, {3} discarded)", new Object[]{
                 //     tn, s.getSum(), Stats.get(tn + " handled").getSum(),
                 //         Stats.get(tn + " discarded").getSum()});
@@ -220,8 +258,10 @@ export class QuadTreeClusterer {
                 Stats.remove(tn + " handled");
                 Stats.remove(tn + " discarded");
             }
-            //TODO
+
+            LOGGER.log(Level.FINE, `events were stored in {q.getNumQueues()} queue(s)`);
             // LOGGER.log(Level.FINE, "events were stored in {0} queue(s)", q.getNumQueues());
+            LOGGER.log(Level.FINE, `QuadTree has ${this.tree.getSize()} nodes and height ${this.tree.getTreeHeight()} now`);
             // LOGGER.log(Level.FINE, "QuadTree has {0} nodes and height {1} now",
             //     new Object[]{tree.getSize(), tree.getTreeHeight()});
             Stats.logAll(LOGGER);
@@ -248,7 +288,7 @@ export class QuadTreeClusterer {
      * is, the `merged` glyph changes (the object), even though the conceptual
      * glyph does not. Representing with {@code null} fixes that problem.
      *
-     * @param with      Glyph to check overlap with.
+     * @param wth      Glyph to check overlap with.
      * @param at        Timestamp/zoom level at which overlap must be checked.
      * @param addTo     Queue to add merge events to.
      * @param bigGlyphs List of big glyphs currently alive.
@@ -319,7 +359,7 @@ export class QuadTreeClusterer {
         // check the big glyphs
         let bigGlyph = null;
         for (const big of s.bigGlyphs) {
-            LOGGER.log(Level.FINER, "searching for uncertain merge on {0}", big);
+            LOGGER.log(Level.FINER, `searching for uncertain merge on ${big}`);
             const bEvt = big.peekUncertain();
             LOGGER.log(Level.FINER, `found ${bEvt}`,);
             if (event == null || (bEvt != null && bEvt.getAt() < event.getAt())) {
@@ -429,47 +469,44 @@ export class QuadTreeClusterer {
             }
         }
 
-// because of the above check for the border being on the actual border of
-// the non-orphaned cell, the timestamp is exactly the same, so we do not
-// need to (re)calculate it
+        // because of the above check for the border being on the actual border of
+        // the non-orphaned cell, the timestamp is exactly the same, so we do not
+        // need to (re)calculate it
         const oAt = o.getAt();
         const oppositeSide = o.getSide().opposite();
-// create merge events with the glyphs in the neighbors
-// we take the size of the glyph at that point in time into account
+        // create merge events with the glyphs in the neighbors
+        // we take the size of the glyph at that point in time into account
         const sideInterval = Side.interval(
             GrowFunction.sizeAt(glyph, oAt).getBounds2D(),
             o.getSide());
         if (LOGGER != null)
             LOGGER.log(Level.FINER, "size at border is ${sideInterval}");
-// Copy the set of neighbors returned, as the neighbors may in fact change
-// while the out of cell event is being handled; inserting the glyph into
-// the neighboring cells can cause a split to occur and the neighbors to
-// update. All of that is avoided by making a copy now.
-        const neighbors = new ArrayList(cell.getNeighbors(o.getSide()));
+        // Copy the set of neighbors returned, as the neighbors may in fact change
+        // while the out of cell event is being handled; inserting the glyph into
+        // the neighboring cells can cause a split to occur and the neighbors to
+        // update. All of that is avoided by making a copy now.
+        const neighbors = cell.getNeighbors(o.getSide()).copy();
+
+        // const neighbors = new ArrayList(cell.getNeighbors(o.getSide()));
         if (LOGGER != null) {//TODO
-//     LOGGER.log(Level.FINEST, "growing out of {1} of {0} into",
-//         new Object[]
-//     {
-//         o.getCell(), o.getSide();
-//     }
-// )
-//     ;
+            LOGGER.log(Level.FINEST, `growing out of ${o.getSide()} of ${o.getCell()}`);
+            // LOGGER.log(Level.FINEST, "growing out of {1} of {0} into",
+            //     new Object[]{o.getCell(), o.getSide();});
         }
         for (const neighbor of neighbors) {
-            if (LOGGER != null)
+            if (LOGGER !== null)
                 LOGGER.log(Level.FINEST, neighbor.toString());
 
             // ensure that glyph actually grows into this neighbor
-            if (!Utils.intervalsOverlap(Side.interval(
-                neighbor.getSide(oppositeSide), oppositeSide), sideInterval)) {
-                if (LOGGER != null)
+            if (!Utils.intervalsOverlap(Side.interval(neighbor.getSide(oppositeSide), oppositeSide), sideInterval)) {
+                if (LOGGER !== null)
                     LOGGER.log(Level.FINEST, "→ but not at this point in time, so ignoring");
                 continue;
             }
 
             // ensure that glyph was not in this cell yet
             if (neighbor.getGlyphs() != null && neighbor.getGlyphs().contains(glyph)) {
-                if (LOGGER != null)
+                if (LOGGER !== null)
                     LOGGER.log(Level.FINEST, "→ but was already in there, so ignoring");
                 // there might still be other interesting events for this glyph
                 glyph.popOutOfCellInto(q, LOGGER);
@@ -481,7 +518,7 @@ export class QuadTreeClusterer {
 
             // split cell if necessary, to maintain maximum glyphs per cell
             let grownInto;
-            if (neighbor.getGlyphs() != null &&
+            if (neighbor.getGlyphs() !== null &&
                 neighbor.getGlyphs().size() > Constants.MAX_GLYPHS_PER_CELL) {
                 // 1. split and move glyphs in cell to appropriate leaf cells
                 //    (this may split the cell more than once!)
@@ -497,10 +534,9 @@ export class QuadTreeClusterer {
                 // 4. continue with making events in appropriate cells instead
                 //    of `neighbor` or all glyphs associated with `neighbor`
                 grownInto = neighbor.getLeaves(glyph, oAt);
-                if (LOGGER != null && LOGGER.isLoggable(Level.FINE)) {
+                if (LOGGER !== null && LOGGER.isLoggable(Level.FINE)) {
                     for (const iin of neighbor.getLeaves()) {
-                        Stats.record("glyphs per cell",
-                            iin.getGlyphsAlive().size());
+                        Stats.record("glyphs per cell", iin.getGlyphsAlive().size());
                     }
                 }
             } else {
@@ -534,10 +570,10 @@ export class QuadTreeClusterer {
                             continue;
                         }
                         // now, actually create an OUT_OF_CELL event
-                        //TODO
-                        // if (LOGGER != null)
-                        //     LOGGER.log(Level.FINEST, "→ out of {0} of {2} at {1}",
-                        //         new Object[]{side, at, in});
+                        if (LOGGER != null)
+                            //     LOGGER.log(Level.FINEST, "→ out of {0} of {2} at {1}",
+                            //          new Object[]{side, at, in});
+                            LOGGER.log(Level.FINEST, `→ out of ${side} of ${iin} at ${at}`);
                         glyph.record(new OutOfCell(glyph, iin, side, at));
                     }
                 }
@@ -563,5 +599,268 @@ export class QuadTreeClusterer {
         }
     }
 
-    //TODO
+    /**
+     * Given a merge event, see if performing it would cause more merges, and
+     * process those repeatedly until no overlap remains. This function also
+     * has glyphs that tracked any merged glyphs update who they track, and
+     * inserts the merged glyph into the QuadTree. When the merging of glyphs
+     * causes cells of the QuadTree to join, then new merge events are created
+     * in those joined cells as well.
+     */
+    private processNestedMerges(m: GlyphMerge, s: GlobalState, q: MultiQueue, track: boolean): Glyph {
+        if (Constants.TIMERS_ENABLED) {
+            Timers.start("[merge event processing] total");
+            if (track) {
+                Timers.start("[merge event processing] total (track)");
+            }
+        }
+        s.nestedMerges.add(m);
+        s.mergedBigGlyph = false;
+        // create a merged glyph and ensure that the merged glyph does not
+        // overlap other glyphs at this time - repeat until no more overlap
+        let merged = null;
+        let mergedHC = null;
+        let mergedAt = m.getAt();
+
+        if (Constants.TIMERS_ENABLED) {
+            Timers.start("[merge event processing] nested merges");
+        }
+        do {
+            nestedMerge:
+                while (!s.nestedMerges.isEmpty()) {
+                    m = s.nestedMerges.poll();
+
+                    // check that all glyphs in the merge are still alive
+                    for (const glyph of m.getGlyphs()) {
+                        if (glyph !== null && !glyph.isAlive()) {
+                            continue nestedMerge;
+                        }
+                    }
+
+                    if (LOGGER !== null) {
+                        LOGGER.log(Level.FINEST, "handling nested " + m);
+                    }
+
+                    // create a merged glyph, update clustering
+                    if (mergedHC === null) {
+                        merged = new Glyph(m.getGlyphs());
+                        mergedHC = new HierarchicalClustering(merged, mergedAt, ...Utils.map(m.getGlyphs(), s.map, s.createdFromTmp));
+                    } else {
+                        mergedHC.alsoCreatedFrom(s.map.get(m.getGlyphs()[1]));
+                        merged = new Glyph(merged, m.getGlyphs()[1]);
+                        mergedHC.setGlyph(merged);
+                        if (m.getGlyphs()[1].isBig()) {
+                            s.mergedBigGlyph = true;
+                            Stats.count("merge nested big");
+                        } else {
+                            Stats.count("merge nested small");
+                        }
+                    }
+
+                    // mark merged glyphs as dead
+                    for (const glyph of m.getGlyphs()) {
+                        // we skip the `merged` glyph, see `#findOverlap`
+                        if (glyph === null || !glyph.isAlive()) {
+                            continue;
+                        }
+                        glyph.perish();
+                        s.numAlive--;
+                        s.glyphSize.unrecord(glyph.getN());
+                        if (glyph.isBig()) {
+                            s.bigGlyphs.remove(glyph);
+                        }
+                        // copy the set of cells the glyph is in currently, because we
+                        // are about to change that set and don't want to deal with
+                        // ConcurrentModificationExceptions...
+                        for (const cell of glyph.getCells().copy()) {
+                            if (cell.removeGlyph(glyph, mergedAt)) {
+                                // handle merge events (later, see below)
+                                s.orphanedCells.add(cell);
+                                // out of cell events are handled when they
+                                // occur, see #handleOutOfCell
+                            }
+                        }
+                        // update merge events of glyphs that tracked merged glyphs
+                        if (Constants.TRACK && !Constants.ROBUST) {
+                            for (const tracker of glyph.trackedBy) {
+                                if (!s.trackersNeedingUpdate.contains(tracker)) {
+                                    s.trackersNeedingUpdate.add(tracker);
+                                }
+                            }
+                        }
+                    }
+
+                    if (LOGGER !== null) {
+                        LOGGER.log(Level.FINEST, `→ merged glyph is ${merged}`);
+                    }
+                }
+        } while (this.findOverlap(merged, mergedAt, s.nestedMerges, s.bigGlyphs));
+        if (Constants.TIMERS_ENABLED) {
+            Timers.stop("[merge event processing] nested merges");
+            Timers.start("[merge event processing] merge events in joined cells");
+        }
+// handle adding merge events in joined cells
+        s.orphanedCells.stream()
+            .map((cell) => cell.getNonOrphanAncestor())
+            .distinct()
+            .forEach((cell) => {
+                if (Constants.TIMERS_ENABLED)
+                    Timers.start("record all pairs");
+                this.rec.recordAllPairs(cell.getNonOrphanAncestor(), q);
+                if (Constants.TIMERS_ENABLED)
+                    Timers.stop("record all pairs");
+            });
+        s.orphanedCells.clear();
+        if (Constants.TIMERS_ENABLED) {
+            Timers.stop("[merge event processing] merge events in joined cells");
+            Timers.start("[merge event processing] tracker updating");
+        }
+// update merge events of glyphs that tracked merged glyphs
+        if (Constants.TRACK && !Constants.ROBUST) {
+            for (const orphan of s.trackersNeedingUpdate) {
+                if (orphan.isAlive()) {
+                    Stats.record("orphan cells", orphan.getCells().size());
+                    if (!orphan.popMergeInto(q, LOGGER)) {
+                        this.rec.from(orphan);
+                        if (Constants.TIMERS_ENABLED)
+                            Timers.start("first merge recording 2");
+                        for (const cell of orphan.getCells()) {
+                            this.rec.record(cell.getGlyphs());
+                        }
+                        if (Constants.TIMERS_ENABLED)
+                            Timers.stop("first merge recording 2");
+                        this.rec.addEventsTo(q, LOGGER);
+                    }
+                }
+            }
+            s.trackersNeedingUpdate.clear();
+        }
+        if (Constants.TIMERS_ENABLED) {
+            Timers.stop("[merge event processing] tracker updating");
+            Timers.start("[merge event processing] merged glyph insert");
+        }
+// add new glyph to QuadTree cell(s)
+        merged.setBig(s.glyphSize);
+        if (!merged.isBig()) {
+            this.tree.insert(merged, mergedAt);
+            if (LOGGER != null) {
+                LOGGER.log(Level.FINER, `inserted merged glyph into ${merged.getCells().size()} cells`);
+            }
+        }
+        if (Constants.TIMERS_ENABLED) {
+            Timers.stop("[merge event processing] merged glyph insert");
+        }
+
+        // eventually, the last merged glyph is the root
+        s.map.put(merged, mergedHC);
+        this.result = mergedHC;
+
+        return merged;
+    }
+
+    private recordGlyphAndStats(merged: Glyph, s: GlobalState, track: boolean): void {
+        merged.participate();
+        s.numAlive++;
+        s.glyphSize.record(merged.getN());
+        if (merged.isBig()) {
+            Stats.record("merged cells big glyphs", merged.getCells().size());
+            Stats.record("glyphs around big glyphs",
+                merged.getCells().stream().mapToInt((cell) =>
+                    cell.getGlyphsAlive().size()).sum());
+            s.bigGlyphs.add(merged);
+            Stats.record("number of big glyphs", s.bigGlyphs.size());
+        }
+
+        if (Constants.TIMERS_ENABLED) {
+            Timers.stop("[merge event processing] total");
+            if (track) {
+                Timers.stop("[merge event processing] total (track)");
+            }
+        }
+    }
+
+    /**
+     * Given a freshly created glyph originating from a merge, loop over the
+     * QuadTree cells of that glyph and record out of cell events for all.
+     * In the same loop, find merges as well, using the global {@link #rec}.
+     */
+    recordEventsForGlyph(merged: Glyph, at: number, q: MultiQueue) {
+        if (Constants.TIMERS_ENABLED)
+            Timers.start("[merge event processing] merge event recording");
+        // create events with remaining glyphs
+        // (we always have to loop over cells here, `merged` has just
+        //  been created and thus hasn't recorded merge events yet)
+        this.rec.from(merged);
+        Stats.record("merged cells", merged.getCells().size());
+        for (const cell of merged.getCells()) {
+            if (Constants.TIMERS_ENABLED)
+                Timers.start("first merge recording 3");
+            this.rec.record(cell.getGlyphs());
+            if (Constants.TIMERS_ENABLED)
+                Timers.stop("first merge recording 3");
+            // create out of cell events
+            for (const side of Side.values()) {
+                // only create an event when at least one neighbor on
+                // this side does not contain the merged glyph yet
+                let create = false;
+                if (Constants.TIMERS_ENABLED)
+                    Timers.start("neighbor finding");
+                const neighbors = cell.getNeighbors(side);
+                if (Constants.TIMERS_ENABLED)
+                    Timers.stop("neighbor finding");
+                for (const neighbor of neighbors) {
+                    if (!neighbor.getGlyphs().contains(merged)) {
+                        create = true;
+                        break;
+                    }
+                }
+                if (!create) {
+                    continue;
+                }
+                // now, actually create an OUT_OF_CELL event, but only
+                // if the event is still about to happen
+                const ooe = new OutOfCell(merged, cell, side);
+                if (ooe.getAt() > at) {
+                    merged.record(ooe);
+                    if (LOGGER !== null)
+                        LOGGER.log(Level.FINEST, `→ out of ${side} of ${ooe.getAt()} at ${cell}`);
+                }
+            }
+        }
+        merged.popOutOfCellInto(q, LOGGER);
+        this.rec.addEventsTo(q, LOGGER);
+        if (Constants.TIMERS_ENABLED)
+            Timers.stop("[merge event processing] merge event recording");
+    }
+
+    /**
+     * Executed right before going to the next iteration of the event handling
+     * loop. Possibly pauses executiong, depending on parameter.
+     */
+    private step(): void {
+        if (Constants.STATS_ENABLED) {
+            Stats.record("QuadTree cells", Utils.size(this.tree.iterator()));
+            Stats.record("QuadTree leaves", this.tree.getLeaves().size());
+            Stats.record("QuadTree height", this.tree.getTreeHeight());
+        }
+    }
+
+    /**
+     * Returns the latest result of executing the clustering algorithm. Initially
+     * {@code null}.
+     */
+    public getClustering(): HierarchicalClustering {
+        return this.result;
+    }
+
+    /**
+     * Forget about any clustering obtained so far.
+     */
+    public reset(): void {
+        this.result = null;
+    }
+
 }
+
+
+

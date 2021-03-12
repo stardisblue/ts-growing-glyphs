@@ -6,4 +6,8 @@ export class ConfigurableConsoleHandler {
         if (ps.ws) ps.close();
         Logger.setPrintStream(ps);
     }
+
+    static undoRedirect() {
+
+    }
 }

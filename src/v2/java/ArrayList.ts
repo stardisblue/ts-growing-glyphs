@@ -1,3 +1,5 @@
+import {Collectors} from "./Collectors";
+
 export class ArrayList<T> implements Iterable<T> {
     __internal: T[];
 
@@ -25,7 +27,7 @@ export class ArrayList<T> implements Iterable<T> {
     }
 
     [Symbol.iterator](): Iterator<T> {
-        throw  new Error("to implement");
+        return this.__internal[Symbol.iterator]();
     }
 
     clear() {
@@ -105,6 +107,10 @@ export class ArrayList<T> implements Iterable<T> {
     toArray() {
         return Array.from(this.__internal);
     }
+
+    copy() {
+        return ArrayList.__new(Array.from(this.__internal));
+    }
 }
 
 class Optional<K> {
@@ -123,7 +129,7 @@ class Optional<K> {
 }
 
 export class Stream<T> {
-    private __internal: T[];
+    protected __internal: T[];
 
     constructor(array: T[]) {
         this.__internal = array;
@@ -138,8 +144,12 @@ export class Stream<T> {
         return toCollection(this.__internal);
     }
 
-    map<R>(callbackfn: (item: T, index: number, arr: T[]) => R[]) {
+    map<R>(callbackfn: (item: T, index: number, arr: T[]) => R) {
         return new Stream(this.__internal.map(callbackfn));
+    }
+
+    mapToInt(callbackfn: (item: T, index: number, arr: T[]) => number) {
+        return new NumberStream(this.__internal.map(callbackfn));
     }
 
     max(comparator: (a: T, b: T) => number): Optional<T> {
@@ -177,6 +187,16 @@ export class Stream<T> {
     }
 
     iterator() {
-        return this.__internal.values()
+        return this.__internal.values();
+    }
+
+    distinct() {
+        return new Stream(this.collect(Collectors.toSet()));
+    }
+}
+
+class NumberStream extends Stream<number> {
+    sum() {
+        return this.__internal.reduce((sum, value) => sum + value, 0);
     }
 }

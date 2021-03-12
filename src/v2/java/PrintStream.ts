@@ -1,10 +1,11 @@
 import {createWriteStream, WriteStream} from "fs";
+import {File} from "./File";
 
 export class PrintStream {
     ws: WriteStream;
 
-    constructor(name: string) {
-        this.ws = createWriteStream(name);
+    constructor(file: File) {
+        this.ws = createWriteStream(file.name);
         this.ws.on("error", function (err) {
             throw err;
         });
@@ -15,7 +16,7 @@ export class PrintStream {
         this.ws = null;
     }
 
-    writeln(msg: string) {
+    println(msg: string) {
         this.ws.write(msg + "\n");
     }
 }

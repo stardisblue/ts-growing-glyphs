@@ -522,4 +522,8 @@ export class Locales {
      */
     set() {
     }
+
+    static push(locale: any) {
+
+    }
 }
