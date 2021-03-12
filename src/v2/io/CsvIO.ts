@@ -5,8 +5,8 @@ import {QuadTree} from "../datastructure/QuadTree";
 import {Timers, Utils} from "../utils/Utils";
 import {HashMap} from "../java/HashMap";
 import {Glyph} from "../datastructure/Glyph";
-import {LatLng} from "../../v1/LatLng";
 import {Scanner} from "../java/Scanner";
+import {LatLng} from "../datastructure/LatLng";
 
 export class CsvIO {
     private static readonly LOGGER: Logger = (Constants.LOGGING_ENABLED ?
