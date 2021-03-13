@@ -4,8 +4,8 @@ import { Stats, Timers } from '../../utils/Utils';
 
 export class MultiQueue extends PriorityQueue<Event> {
   private static readonly INSERTION: number = 0;
-  private static readonly DELETION: number = 0;
-  private static readonly DISCARD: number = 0;
+  private static readonly DELETION: number = 1;
+  private static readonly DISCARD: number = 2;
 
   /**
    * Counts in the order insertions, deletions, discards.

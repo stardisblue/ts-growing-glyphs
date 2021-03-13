@@ -1,12 +1,12 @@
-import { isRectangle2D, Rectangle2D } from '../java/Rectangle2D';
-import { StringBuilder } from '../java/StringBuilder';
-import { ArrayList } from '../java/ArrayList';
-import { Level, Logger } from '../java/Logger';
-import { Pattern } from '../java/Pattern';
-import { Comparator } from './Comparator';
-import { Entry, HashMap } from '../java/HashMap';
-import { Stat } from './Stat';
-import { Timer } from './Timer';
+import {isRectangle2D, Rectangle2D} from "../java/Rectangle2D";
+import {StringBuilder} from "../java/StringBuilder";
+import {ArrayList} from "../java/ArrayList";
+import {Level, Logger} from "../java/Logger";
+import {Pattern} from "../java/Pattern";
+import {Comparator} from "./Comparator";
+import {Entry, HashMap} from "../java/HashMap";
+import {Stat} from "./Stat";
+import {Timer} from "./Timer";
 
 export class Utils {
   /**
@@ -45,22 +45,22 @@ export class Utils {
   ): number {
     if (
       args.length === 4 &&
-      typeof args[0] === 'number' &&
-      typeof args[1] === 'number' &&
-      typeof args[2] === 'number' &&
-      typeof args[3] === 'number'
+      typeof args[0] === "number" &&
+      typeof args[1] === "number" &&
+      typeof args[2] === "number" &&
+      typeof args[3] === "number"
     ) {
       return this.__euclideanAABB(...args);
     } else if (
       args.length === 3 &&
       isRectangle2D(args[0]) &&
-      typeof args[1] === 'number' &&
-      typeof args[2] === 'number'
+      typeof args[1] === "number" &&
+      typeof args[2] === "number"
     ) {
       return this.__euclideanRectangleXY(...args);
     }
 
-    throw new Error('unable to resolve');
+    throw new Error("unable to resolve");
   }
 
   /**
@@ -145,7 +145,7 @@ export class Utils {
           return iterator;
         }
         // can only be iterated once
-        throw new Error(' can only be iterated once');
+        throw new Error(" can only be iterated once");
       }
 
       /**
@@ -156,7 +156,7 @@ export class Utils {
           return iterator;
         }
         // can only be iterated once
-        throw new Error(' can only be iterated once');
+        throw new Error(" can only be iterated once");
       }
     })();
   }
@@ -236,7 +236,7 @@ export class Utils {
    */
   static size<T>(iterator: Iterator<T>): number {
     let count = 0;
-    let res = iterator.next();
+    let res: IteratorResult<T> = {done: false, value: null};
     for (; !res.done; res = iterator.next()) {
       count++;
     }
@@ -287,7 +287,7 @@ export function String__length(v: string) {
 
 export class Stats {
   private static readonly TAG_REGEX: Pattern = Pattern.compile(
-    /^\[([a-z]+)]\\s+/
+    /^\[([a-z]+)]\s+/
   );
 
   /**
@@ -305,11 +305,11 @@ export class Stats {
   }
 
   static __countString(name: string) {
-    this.record('[count] ' + name, 1);
+    this.record("[count] " + name, 1);
   }
 
   static __countStringBoolean(name: string, bool: boolean) {
-    this.record('[perc] ' + name, bool ? 1 : 0);
+    this.record("[perc] " + name, bool ? 1 : 0);
   }
 
   static get(name: string): Stat {
@@ -327,42 +327,40 @@ export class Stats {
   }
 
   static logAll(logger: Logger) {
-    logger.log(Level.FINE, '');
-    logger.log(Level.FINE, 'STATS');
+    logger.log(Level.FINE, "");
+    logger.log(Level.FINE, "STATS");
     const padTo = this.stats
       .keySet()
       .stream()
       .filter((n) => {
         const tagMatcher = this.TAG_REGEX.matcher(n);
-        return !tagMatcher.find() || tagMatcher.group(1) !== 'perc';
+        return !tagMatcher.find() || tagMatcher.group(1) !== "perc";
       })
-      .map((n) => this.TAG_REGEX.matcher(n).replaceAll(''))
+      .map((n) => this.TAG_REGEX.matcher(n).replaceAll(""))
       .max(Comparator.comparingInt(String__length))
       .get().length;
     // const f = "%1$-" + padTo + "s";
 
-    const f = (k) => `${k}-${padTo}s`;
-    this.stats
-      .entrySet()
-      .stream()
-      // taking advantage of js sorting system
-      .sorted(Comparator.comparing((a) => this.noTag(a.getKey())))
-
-      // .sorted(Comparator.comparing(a => this.noTag(a.getKey())))
-      .forEach((e) => {
-        const tagMatcher = this.TAG_REGEX.matcher(e.getKey());
-        if (tagMatcher.find()) {
-          const tag = tagMatcher.group(1);
-          const n = f(tagMatcher.replaceAll(''));
-          if (tag === 'perc') {
-            e.getValue().logPercentage(logger, n);
-          } else {
-            e.getValue().logCount(logger, n);
-          }
+    const f = (k: string) => k.padEnd(padTo);
+    const toSort = new ArrayList<Entry<string, Stat>>();
+    for (const e of this.stats.entrySet()) {
+      toSort.add(e);
+    }
+    toSort.sort(Comparator.comparing(a => this.noTag(a.getKey())));
+    for (const e of toSort) {
+      const tagMatcher = this.TAG_REGEX.matcher(e.getKey());
+      if (tagMatcher.find()) {
+        const tag = tagMatcher.group(1);
+        const n = f(tagMatcher.replaceAll(""));
+        if (tag === "perc") {
+          e.getValue().logPercentage(logger, n);
         } else {
-          e.getValue().log(logger, f(e.getKey()));
+          e.getValue().logCount(logger, n);
         }
-      });
+      } else {
+        e.getValue().log(logger, f(e.getKey()));
+      }
+    }
   }
 
   static record(name: string, value: number) {
@@ -388,7 +386,7 @@ export class Stats {
   private static noTag(name: string): string {
     const tagMatcher = this.TAG_REGEX.matcher(name);
     if (tagMatcher.find()) {
-      return tagMatcher.replaceAll('').trim();
+      return tagMatcher.replaceAll("").trim();
     }
     return name;
   }
@@ -438,7 +436,7 @@ export class Timers {
   /**
    * Log the time that elapsed to the given logger. This will
    * {@link Timer#stop() stop} the timer and log its {@link
-   * Timer#getElapsedTotal() total elapsed time}.
+    * Timer#getElapsedTotal() total elapsed time}.
    * <p>
    * This will log at level {@link Level#FINE}.
    *
@@ -458,42 +456,53 @@ export class Timers {
   /**
    * Log the time that elapsed on all timers recorded so far. This will
    * {@link Timer#stop() stop} the timers and log their {@link
-   * Timer#getElapsedTotal() total elapsed time}.
+    * Timer#getElapsedTotal() total elapsed time}.
    *
    * @param logger Logger to log to.
    */
   static logAll(logger: Logger) {
-    logger.log(Level.FINE, '');
-    logger.log(Level.FINE, 'TIMERS');
-    const padTo = this.timers
-      .keySet()
-      .stream()
-      .max(Comparator.comparingInt(String__length))
-      .get().length;
+    logger.log(Level.FINE, "");
+    logger.log(Level.FINE, "TIMERS");
+    let seen = false;
+    let best = null;
+    const comparator = Comparator.comparingInt(String__length);
+    for (const s of this.timers.keySet()) {
+      if (!seen || comparator(s, best) > 0) {
+        seen = true;
+        best = s;
+      }
+    }
+    const padTo = (seen ? best : "").length;
     // const f = "%1$-" + padTo + "s";
-    const f = (k: string) => `${k}-${padTo}s`;
+    const f = (k: string) => k.padEnd(padTo);
     // log entries without section
-    this.timers
-      .entrySet()
-      .stream()
-      .filter((e) => !e.getKey().startsWith('['))
-      .sorted(Entry.comparingByKey())
-      .forEach((e) => e.getValue().log(logger, f(e.getKey())));
+    const toSort = new ArrayList<Entry<string, Timer>>();
+    for (const stringTimerEntry of this.timers.entrySet()) {
+      if (!stringTimerEntry.getKey().startsWith("[")) {
+        toSort.add(stringTimerEntry);
+      }
+    }
+    toSort.sort(Entry.comparingByKey());
+    for (const stringTimerEntry of toSort) {
+      stringTimerEntry.getValue().log(logger, f(stringTimerEntry.getKey()));
+    }
     // log entries in a section
-    const timersInSections = this.timers
-      .entrySet()
-      .stream()
-      .filter((e) => e.getKey().startsWith('['))
-      .sorted(Entry.comparingByKey())
-      .toArray();
-    let lastSection = '';
+    const list = new ArrayList<Entry<string, Timer>>();
+    for (const stringTimerEntry of this.timers.entrySet()) {
+      if (stringTimerEntry.getKey().startsWith("[")) {
+        list.add(stringTimerEntry);
+      }
+    }
+    list.sort(Entry.comparingByKey());
+    const timersInSections = list.toArray();
+    let lastSection = "";
     for (const timersInSection of timersInSections) {
       const e = timersInSection;
-      const offset = e.getKey().indexOf(']') + 1;
+      const offset = e.getKey().indexOf("]") + 1;
       const section = e.getKey().substring(0, offset);
       if (section !== lastSection) {
         lastSection = section;
-        logger.log(Level.FINE, '');
+        logger.log(Level.FINE, "");
         logger.log(Level.FINE, lastSection);
       }
       e.getValue().log(logger, f(e.getKey().substring(offset + 1)));
@@ -546,22 +555,27 @@ export class Locales {
   /**
    * @deprecated
    */
-  static get() {}
+  static get() {
+  }
 
   /**
    * @deprecated
    */
-  pop() {}
+  pop() {
+  }
 
   /**
    * @deprecated
    */
-  push() {}
+  push() {
+  }
 
   /**
    * @deprecated
    */
-  set() {}
+  set() {
+  }
 
-  static push(locale: any) {}
+  static push(locale: any) {
+  }
 }

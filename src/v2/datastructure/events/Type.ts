@@ -1,7 +1,7 @@
 export class Type {
   static readonly MERGE = new Type('merge', 0);
   static readonly OUT_OF_CELL = new Type('out of cell', 10);
-  static readonly _values = [Type.MERGE, Type.OUT_OF_CELL];
+  static readonly _values = [Type.OUT_OF_CELL, Type.MERGE ];
   private readonly name: string;
   readonly priority: number;
 
@@ -11,7 +11,7 @@ export class Type {
   }
 
   toString() {
-    return this.name + 'event';
+    return this.name + ' event';
   }
 
   static values() {

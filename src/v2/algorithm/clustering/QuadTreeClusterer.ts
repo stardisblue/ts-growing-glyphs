@@ -141,7 +141,7 @@ export class QuadTreeClusterer {
         if (LOGGER != null) LOGGER.log(Level.FINEST, glyphs[i].toString());
         this.rec.from(glyphs[i]);
         if (Constants.TIMERS_ENABLED) Timers.start('first merge recording 1');
-        this.rec.record(glyphs, i + 1, glyphs.length);
+        this.rec.__recordGlyphNumberNumber(glyphs, i + 1, glyphs.length);
         if (Constants.TIMERS_ENABLED) Timers.stop('first merge recording 1');
         this.rec.addEventsTo(q, LOGGER);
 
@@ -179,7 +179,7 @@ export class QuadTreeClusterer {
     let e: Event;
     while ((e = this.getNextEvent(q, state)) !== null) {
       // log on a slightly higher urgency level when one of the glyphs is tracked
-      if (LOGGER != null) {
+      if (LOGGER !== null) {
         if (LOGGER.getLevel() > Level.FINER) {
           for (const glyph of e.getGlyphs()) {
             if (glyph.track) {
@@ -191,7 +191,7 @@ export class QuadTreeClusterer {
         // log about handling this event
         LOGGER.log(
           Level.FINER,
-          `handling ${e.getType()} at ${e.getAt()} involving`
+          `handling ${e.getType()} at ${e.getAt().toFixed(3)} involving`
         );
         // LOGGER.log(Level.FINER, "handling {0} at {1} involving",
         //     new Object[]{e.getType(), e.getAt()});
@@ -224,7 +224,7 @@ export class QuadTreeClusterer {
               }
             }
           }
-          if (big == null) {
+          if (big === null) {
             if (bigBig) {
               Stats.count('merge big/big');
             } else {
@@ -249,7 +249,7 @@ export class QuadTreeClusterer {
 
       // check ourselves, conditionally
       // reset higher log level for tracked glyphs, if applicable
-      if (LOGGER != null) LOGGER.setLevel(defaultLevel);
+      if (LOGGER !== null) LOGGER.setLevel(defaultLevel);
     }
     if (LOGGER != null) {
       if (LOGGER.isLoggable(Level.FINE)) {
@@ -288,7 +288,7 @@ export class QuadTreeClusterer {
 
       LOGGER.log(
         Level.FINE,
-        `events were stored in {q.getNumQueues()} queue(s)`
+        `events were stored in ${q.getNumQueues()} queue(s)`
       );
       // LOGGER.log(Level.FINE, "events were stored in {0} queue(s)", q.getNumQueues());
       LOGGER.log(
@@ -406,8 +406,8 @@ export class QuadTreeClusterer {
 
     // if we are going with the queue event, remove it from the queue
     // otherwise remove it from the queue of the glyph it came from
-    if (event != null) {
-      if (event == queueEvent) {
+    if (event !== null) {
+      if (event === queueEvent) {
         q.poll();
       } else {
         bigGlyph.pollUncertain();
@@ -776,15 +776,17 @@ export class QuadTreeClusterer {
       Timers.start('[merge event processing] merge events in joined cells');
     }
     // handle adding merge events in joined cells
-    s.orphanedCells
-      .stream()
-      .map((cell) => cell.getNonOrphanAncestor())
-      .distinct()
-      .forEach((cell) => {
-        if (Constants.TIMERS_ENABLED) Timers.start('record all pairs');
-        this.rec.recordAllPairs(cell.getNonOrphanAncestor(), q);
-        if (Constants.TIMERS_ENABLED) Timers.stop('record all pairs');
-      });
+    const uniqueValues = new Set<QuadTree>();
+    for (const quadTree of s.orphanedCells) {
+      const nonOrphanAncestor = quadTree.getNonOrphanAncestor();
+      if (uniqueValues.add(nonOrphanAncestor)) {
+        if (Constants.TIMERS_ENABLED)
+          Timers.start("record all pairs");
+        this.rec.recordAllPairs(nonOrphanAncestor.getNonOrphanAncestor(), q);
+        if (Constants.TIMERS_ENABLED)
+          Timers.stop("record all pairs");
+      }
+    }
     s.orphanedCells.clear();
     if (Constants.TIMERS_ENABLED) {
       Timers.stop('[merge event processing] merge events in joined cells');
@@ -818,7 +820,7 @@ export class QuadTreeClusterer {
     merged.setBig(s.glyphSize);
     if (!merged.isBig()) {
       this.tree.insert(merged, mergedAt);
-      if (LOGGER != null) {
+      if (LOGGER !== null) {
         LOGGER.log(
           Level.FINER,
           `inserted merged glyph into ${merged.getCells().size()} cells`

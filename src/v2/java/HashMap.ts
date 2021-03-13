@@ -4,6 +4,9 @@ import { ArrayList } from './ArrayList';
  * @deprecated use Map, only used for shadowing
  */
 export class HashMap<K, V> extends Map<K, V> {
+  constructor() {
+    super();
+  }
   /**
    * @deprecated use Map#has
    */

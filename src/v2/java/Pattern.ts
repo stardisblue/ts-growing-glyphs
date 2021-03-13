@@ -13,8 +13,7 @@ export class Matcher {
   }
 
   group(group: number): string {
-    return (this._result ?? (this._result = this.str.match(this.regexp)))
-      .groups[group];
+    return (this._result ?? (this._result = this.str.match(this.regexp)))[group];
   }
 
   replaceAll(s: string) {

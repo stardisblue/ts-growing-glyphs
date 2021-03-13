@@ -1,8 +1,9 @@
 import { Glyph } from '../Glyph';
 import { Type } from './Type';
 import { StringBuilder } from '../../java/StringBuilder';
+import {Comparable} from "../../java/Comparable";
 
-export abstract class Event {
+export abstract class Event implements Comparable<Event>{
   /**
    * Timestamp/zoom level at which the event occurs.
    */

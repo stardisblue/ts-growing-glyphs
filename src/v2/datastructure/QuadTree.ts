@@ -127,10 +127,13 @@ export class QuadTree implements Iterable<QuadTree> {
     if (this.glyphs == null) {
       return this.glyphs;
     }
-    return this.glyphs
-      .stream()
-      .filter(Glyph.__isAlive)
-      .collect(Collectors.toCollection(ArrayList.__new));
+    const result = new ArrayList<Glyph>();
+    for (const glyph of this.glyphs) {
+      if (glyph.isAlive()) {
+        result.add(glyph);
+      }
+    }
+    return result;
   }
 
   public getHeight() {

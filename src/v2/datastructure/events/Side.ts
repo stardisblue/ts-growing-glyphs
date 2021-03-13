@@ -128,7 +128,7 @@ export class Side {
   }
 
   others(): [Side, Side, Side] {
-    if (this._others == null) {
+    if (this._others === null) {
       this._others = [null, null, null];
       let i = 0;
       for (const that of Side.values()) {

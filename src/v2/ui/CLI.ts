@@ -89,6 +89,7 @@ export class CLI {
       }
       clusterer.cluster();
     } catch (e) {
+      console.error(e)
       System.err.println('Timed out.');
     } finally {
       ConfigurableConsoleHandler.undoRedirect();

@@ -6,7 +6,7 @@ export class Arrays {
   }
 
   static stream<T>(items: T[], from: number, upto: number) {
-    return new Stream(items.splice(from, upto));
+    return new Stream(items.slice(from, upto));
   }
 
   static nCopies(length: number, value: number) {

@@ -55,14 +55,14 @@ export class Stat {
     if (this.min === this.max) {
       logger.log(
         Level.FINE,
-        `${name} was ${this.max.toFixed(2)} and did not change over ${
+        `${name} was ${this.max.toFixed(2).padStart(13)} and did not change over ${
           this.n
         } measurement${this.n === 1 ? '' : 's'}`
       );
     } else {
       logger.log(
         Level.FINE,
-        `${name} was ${this.average.toFixed(2)} on average and always between ${
+        `${name} was ${this.average.toFixed(2).padStart(13)} on average and always between ${
           this.min
         } and ${this.max} over ${this.n} measurement${this.n === 1 ? '' : 's'}`
       );

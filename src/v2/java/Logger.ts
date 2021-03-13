@@ -40,10 +40,10 @@ export class Logger {
   log(level: Level, msg: string) {
     if (level >= this.level) {
       let prefix = '';
+      let offset = 2
       switch (level) {
         case Level.OFF:
           prefix = 'OFF';
-
           break;
         case Level.SEVERE:
           prefix = 'SEVERE';
@@ -62,16 +62,18 @@ export class Logger {
           break;
         case Level.FINER:
           prefix = 'FINER';
+          offset = 4
           break;
         case Level.FINEST:
           prefix = 'FINEST';
+          offset = 6
           break;
         case Level.ALL:
           prefix = 'All';
           break;
       }
 
-      prefix = prefix.padEnd(8) + '|  ';
+      prefix = prefix.padEnd(8) + '|'.padEnd(offset);
 
       if (Logger._ps) {
         Logger._ps.println(prefix + msg);

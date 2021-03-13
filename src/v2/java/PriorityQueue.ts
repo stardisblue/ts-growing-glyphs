@@ -1,10 +1,11 @@
-import TinyQueue from 'tinyqueue';
+import TinyQueue from "tinyqueue";
+import {Comparable} from "./Comparable";
 
-export class PriorityQueue<T> {
+export class PriorityQueue<T extends Comparable<any>> {
   private __internal: TinyQueue<T>;
 
   constructor(n?: number) {
-    this.__internal = new TinyQueue();
+    this.__internal = new TinyQueue<T>([], (a, b) => a.compareTo(b));
   }
 
   add(merge: T): boolean {

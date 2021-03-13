@@ -30,6 +30,10 @@ export class ArrayList<T> implements Iterable<T> {
     return this.__internal[Symbol.iterator]();
   }
 
+  get length (){
+    return this.__internal.length
+  }
+
   clear() {
     this.__internal = [];
   }
@@ -132,6 +136,10 @@ export class Stream<T> {
 
   constructor(array: T[]) {
     this.__internal = array;
+  }
+
+  get length (){
+    return this.__internal.length
   }
 
   filter(callbackfn: (item: T, index: number, arr: T[]) => boolean) {

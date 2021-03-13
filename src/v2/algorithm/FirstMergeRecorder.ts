@@ -395,7 +395,7 @@ export class FirstMergeRecorder {
    * @param from Glyph with which merges should be recorded starting now.
    */
   public from(from: Glyph): void {
-    if (LOGGER != null) {
+    if (LOGGER !== null) {
       LOGGER.log(Level.FINE, `recording merges from ${from}`);
     }
     this._from = from;
@@ -464,7 +464,7 @@ export class FirstMergeRecorder {
     from: number,
     upto: number
   ): void {
-    this.record(Arrays.stream(glyphs, from, upto));
+    this.__recordStream(Arrays.stream(glyphs, from, upto));
   }
 
   /**
