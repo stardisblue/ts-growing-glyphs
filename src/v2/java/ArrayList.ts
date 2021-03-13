@@ -3,6 +3,10 @@ import { Collectors } from './Collectors';
 export class ArrayList<T> implements Iterable<T> {
   __internal: T[];
 
+  toString(){
+    return `[${this.__internal.join(', ')}]`
+  }
+
   static __new<T>(list: T[]) {
     const arr = new ArrayList<T>();
     arr.__internal = list;
@@ -17,8 +21,8 @@ export class ArrayList<T> implements Iterable<T> {
     this.__internal.splice(index, 0, value);
   }
 
-  add(...values: T[]) {
-    this.__internal.push(...values);
+  add(value: T) {
+    this.__internal.push(value);
     return true;
   }
 

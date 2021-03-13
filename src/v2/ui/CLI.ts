@@ -29,14 +29,14 @@ export class CLI {
       return;
     }
 
-    // try {
-    //   ConfigurableConsoleHandler.redirectTo(
-    //     new PrintStream(new File('non_regression.txt'))
-    //   );
-    // } catch (e) {
-    //   System.err.println('Cannot open output file for writing');
-    //   return;
-    // }
+    try {
+      ConfigurableConsoleHandler.redirectTo(
+        new PrintStream(new File('non_regression.txt'))
+      );
+    } catch (e) {
+      System.err.println('Cannot open output file for writing');
+      return;
+    }
 
     const w = 512;
     const h = 512;

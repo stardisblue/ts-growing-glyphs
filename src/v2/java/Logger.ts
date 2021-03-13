@@ -18,7 +18,7 @@ export class Logger {
 
   private constructor(name: string) {
     this._name = name;
-    this.level = Level.FINEST;
+    this.level = Level.FINE;
   }
 
   static getLogger(name: string) {

@@ -4,24 +4,24 @@
  * {@link Glyph#record(GlyphMerge) made aware} of the merges that are happening
  * to them. This class respects {@link Glyph}.
  */
-import { Level, Logger } from '../java/Logger';
-import { Constants } from '../utils/Constants';
-import { Glyph } from '../datastructure/Glyph';
-import { ArrayDeque } from '../java/ArrayDeque';
-import { MultiQueue } from '../datastructure/queues/MultiQueue';
-import { GlyphMerge } from '../datastructure/events/GlyphMerge';
-import { Arrays } from '../java/Arrays';
-import { ArrayList, Stream } from '../java/ArrayList';
-import { Collectors } from '../java/Collectors';
-import { Timers, Utils } from '../utils/Utils';
-import { QuadTree } from '../datastructure/QuadTree';
-import { GrowFunction } from '../datastructure/growfunction/GrowFunction';
+import {Level, Logger} from "../java/Logger";
+import {Constants} from "../utils/Constants";
+import {Glyph} from "../datastructure/Glyph";
+import {ArrayDeque} from "../java/ArrayDeque";
+import {MultiQueue} from "../datastructure/queues/MultiQueue";
+import {GlyphMerge} from "../datastructure/events/GlyphMerge";
+import {Arrays} from "../java/Arrays";
+import {ArrayList, Stream} from "../java/ArrayList";
+import {Collectors} from "../java/Collectors";
+import {Timers, Utils} from "../utils/Utils";
+import {QuadTree} from "../datastructure/QuadTree";
+import {GrowFunction} from "../datastructure/growfunction/GrowFunction";
 
 function getLogger() {
   let l: Logger;
 
   return Constants.LOGGING_ENABLED &&
-    (l = Logger.getLogger('FirstMergeRecorder')).isLoggable(Level.FINER)
+  (l = Logger.getLogger("FirstMergeRecorder")).isLoggable(Level.FINER)
     ? l
     : null;
 }
@@ -85,11 +85,11 @@ export class FirstMerge {
           this.size++;
         }
         // make room to shift, if needed
-        if (this.at.size() == Constants.MAX_MERGES_TO_RECORD) {
-          this.at.remove(this.at.size() - 1);
+        if (this.at.size() === Constants.MAX_MERGES_TO_RECORD) {
+          this.at.removeI(this.at.size() - 1);
           this.glyphs.addI(i, this.glyphs.removeI(this.glyphs.size() - 1));
         }
-        this.at.add(i, at);
+        this.at.addI(i, at);
         this.glyphs.get(i).clear();
         this.glyphs.get(i).add(candidate);
         break;
@@ -102,7 +102,7 @@ export class FirstMerge {
     if (LOGGER != null) {
       LOGGER.log(
         Level.FINER,
-        `#${this} now h as glyphs ${this.glyphs.toArray()} at ${this.at.toArray()}`
+        `#${this} now has glyphs ${this.glyphs.toArray().join(', ')} at [${this.at.toArray().join(', ')}]`
       );
       // LOGGER.log(Level.FINER, "#{0} now has glyphs {1} at {2}",
       //     new Object[]{
@@ -223,7 +223,7 @@ export class FirstMerge {
       }
     } else if (cs > ws) {
       for (let i = cs - 1; i >= ws; --i) {
-        this.at.remove(i);
+        this.at.removeI(i);
         this.glyphs.removeI(i);
       }
     }
@@ -242,7 +242,7 @@ export class FirstMerge {
     // Collections.rotate(this.glyphs, -1);
     this.size--;
 
-    const result = new GlyphMerge[glyphs.size()]();
+    const result: GlyphMerge[] = new Array(glyphs.size());
     let i = 0;
     for (const wth of glyphs) {
       result[i++] = new GlyphMerge(
@@ -373,7 +373,7 @@ export class FirstMergeRecorder {
 
   collector(): (glyphs: Glyph[]) => FirstMerge {
     if (FirstMergeRecorder.collector == null) {
-      FirstMergeRecorder.collector = function (glyphs: Glyph[]) {
+      FirstMergeRecorder.collector = (glyphs: Glyph[]) => {
         return glyphs.reduce<FirstMerge>(
           (m, g) => (m.accept(this, g), m),
           FirstMergeRecorder.newInstance()
@@ -409,6 +409,7 @@ export class FirstMergeRecorder {
    * This method may use parallelization to speed up recording.
    *
    * @param glyphs Stream of glyphs to record.
+   * @deprecated
    */
   public record(glyphs: Stream<Glyph>);
   /**
@@ -418,6 +419,7 @@ export class FirstMergeRecorder {
    * This method may use parallelization to speed up recording.
    *
    * @param glyphs Set of glyphs to record.
+   * @deprecated
    */
   public record(glyphs: ArrayList<Glyph>);
   /**
@@ -430,8 +432,15 @@ export class FirstMergeRecorder {
    * @param glyphs Array of glyphs to look in.
    * @param from   First index of glyph to record.
    * @param upto   Index up to but excluding which glyphs will be recorded.
+   * @deprecated
    */
   public record(glyphs: Glyph[], from: number, upto: number): void;
+  /**
+   * @deprecated
+   * @param glyphs
+   * @param from
+   * @param upto
+   */
   public record(
     glyphs: Glyph[] | Stream<Glyph> | ArrayList<Glyph>,
     from?: number,
@@ -445,7 +454,7 @@ export class FirstMergeRecorder {
       return this.__recordArrayList(glyphs);
     }
 
-    throw new Error('failed to find a way');
+    throw new Error("failed to find a way");
   }
 
   /**
@@ -477,7 +486,7 @@ export class FirstMergeRecorder {
    */
   public __recordArrayList(glyphs: ArrayList<Glyph>) {
     if (glyphs != null) {
-      this.record(glyphs.stream());
+      this.__recordStream(glyphs.stream());
     }
   }
 
@@ -511,9 +520,9 @@ export class FirstMergeRecorder {
     for (let i = 0; i < glyphs.length; ++i) {
       // add events for when two glyphs in the same cell touch
       this.from(glyphs[i]);
-      Timers.start('first merge recording 5');
-      this.record(glyphs, i + 1, glyphs.length);
-      Timers.stop('first merge recording 5');
+      Timers.start("first merge recording 5");
+      this.__recordGlyphNumberNumber(glyphs, i + 1, glyphs.length);
+      Timers.stop("first merge recording 5");
       this.addEventsTo(q);
     }
   }

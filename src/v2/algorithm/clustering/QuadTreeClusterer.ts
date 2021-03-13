@@ -395,9 +395,9 @@ export class QuadTreeClusterer {
     // check the big glyphs
     let bigGlyph = null;
     for (const big of s.bigGlyphs) {
-      LOGGER.log(Level.FINER, `searching for uncertain merge on ${big}`);
+      LOGGER?.log(Level.FINER, `searching for uncertain merge on ${big}`);
       const bEvt = big.peekUncertain();
-      LOGGER.log(Level.FINER, `found ${bEvt}`);
+      LOGGER?.log(Level.FINER, `found ${bEvt}`);
       if (event == null || (bEvt != null && bEvt.getAt() < event.getAt())) {
         event = bEvt.getGlyphMerge();
         bigGlyph = big;
@@ -614,7 +614,7 @@ export class QuadTreeClusterer {
         // create merge events with glyphs in the cells the glyph grows
         // into - we must do this to get correctness
         Timers.start("first merge recording 4");
-        this.rec.record(iin.getGlyphs());
+        this.rec.__recordArrayList(iin.getGlyphs());
         Timers.stop("first merge recording 4");
 
         // create out of cell events for the cells the glyph grows into,
@@ -800,7 +800,7 @@ export class QuadTreeClusterer {
             if (Constants.TIMERS_ENABLED)
               Timers.start("first merge recording 2");
             for (const cell of orphan.getCells()) {
-              this.rec.record(cell.getGlyphs());
+              this.rec.__recordArrayList(cell.getGlyphs());
             }
             if (Constants.TIMERS_ENABLED)
               Timers.stop("first merge recording 2");
@@ -881,7 +881,7 @@ export class QuadTreeClusterer {
     Stats.record("merged cells", merged.getCells().size());
     for (const cell of merged.getCells()) {
       if (Constants.TIMERS_ENABLED) Timers.start("first merge recording 3");
-      this.rec.record(cell.getGlyphs());
+      this.rec.__recordArrayList(cell.getGlyphs());
       if (Constants.TIMERS_ENABLED) Timers.stop("first merge recording 3");
       // create out of cell events
       for (const side of Side.values()) {
