@@ -445,13 +445,13 @@ export class Timers {
    * @param logger Logger to log to.
    * @see Utils.Timers#start(String)
    */
-  static log(name: string, logger: Logger);
-  static log(name: string, logger: Logger, level: Level);
-  static log(name: string, logger: Logger, level: Level = Level.FINE) {
+  static log(name: string, logger: Logger | null);
+  static log(name: string, logger: Logger | null, level: Level);
+  static log(name: string, logger: Logger | null, level: Level = Level.FINE) {
     if (!this.timers.containsKey(name)) {
       return;
     }
-    this.timers.get(name).log(logger, name, level);
+    this.timers.get(name)!.log(logger, name, level);
   }
 
   /**

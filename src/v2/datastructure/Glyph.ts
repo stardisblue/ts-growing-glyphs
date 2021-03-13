@@ -402,7 +402,7 @@ export class Glyph {
    * @param l Logger to log events to, can be {@code null}.
    * @return Whether an event was popped into the queue.
    */
-  popOutOfCellInto(q: MultiQueue, l: Logger): boolean {
+  popOutOfCellInto(q: MultiQueue, l: Logger | null): boolean {
     if (this.big) {
       throw new Error(
         "big glyphs don't pop out of cell events into the shared queue"

@@ -8,12 +8,12 @@ import { Glyph } from '../datastructure/Glyph';
 import { PrintStream } from '../java/PrintStream';
 
 export class PointIO {
-  private static readonly LOGGER: Logger = Constants.LOGGING_ENABLED
+  private static readonly LOGGER: Logger | null = Constants.LOGGING_ENABLED
     ? Logger.getLogger(PointIO.name)
     : null;
 
   public static async read(file: File, tree: QuadTree) {
-    PointIO.LOGGER.log(Level.FINE, 'ENTRY into PointIO#read()');
+    PointIO.LOGGER?.log(Level.FINE, 'ENTRY into PointIO#read()');
     let sum = 0;
     // Locales.push(Locale.US);
     if (Constants.TIMERS_ENABLED) {
@@ -50,7 +50,7 @@ export class PointIO {
     // Locales.push(Locale.US);
     try {
       const writer = new PrintStream(new FileOutputStream(file));
-      for (const leaf of tree.getLeaves()) {
+      for (const leaf of tree.__getLeaves()) {
         for (const s of leaf.getGlyphs()) {
           writer.println(s.getX() + ' ' + s.getY() + ' ' + s.getN());
         }

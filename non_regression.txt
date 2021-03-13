@@ -1,6 +1,6 @@
 FINE    |  ENTRY into CsvIO#read()
 INFO    |  loaded 7103 locations
-FINE    |  reading file took  0.16 seconds (wall clock time
+FINE    |  reading file took  0.17 seconds (wall clock time
 INFO    |  read 7182 entries and ignored 336
 FINE    |  RETURN from CsvIO#read()
 FINE    |  clustering using the QuadTree Clusterer algorithm
@@ -40,28 +40,28 @@ FINE    |  queue size                         was      12306.93 on average and a
 FINE    |  total # works                      was       7182.00 and did not change over 2 measurements
 FINE    |  
 FINE    |  TIMERS
-FINE    |  clustering                                            took 10.38 seconds (wall clock time
+FINE    |  clustering                                            took 10.39 seconds (wall clock time
 FINE    |  first merge recording 1                               took  0.05 seconds (wall clock time, 7103 timings
 FINE    |  first merge recording 2                               took  0.02 seconds (wall clock time, 2218 timings
 FINE    |  first merge recording 3                               took  0.06 seconds (wall clock time, 10302 timings
 FINE    |  first merge recording 4                               took  0.03 seconds (wall clock time, 3931 timings
 FINE    |  first merge recording 5                               took  0.03 seconds (wall clock time, 6126 timings
 FINE    |  neighbor finding                                      took  0.00 seconds (wall clock time, 41208 timings
-FINE    |  out of cell event processing                          took  0.17 seconds (wall clock time, 4744 timings
+FINE    |  out of cell event processing                          took  0.16 seconds (wall clock time, 4744 timings
 FINE    |  queue operations                                      took  0.08 seconds (wall clock time, 91990 timings
 FINE    |  record all pairs                                      took  0.06 seconds (wall clock time, 778 timings
 FINE    |  
 FINE    |  [QuadTree]
-FINE    |  getLeaves                                             took  0.05 seconds (wall clock time, 10765 timings
-FINE    |  insert                                                took  0.06 seconds (wall clock time, 16240 timings
-FINE    |  join                                                  took  0.04 seconds (wall clock time, 26391 timings
+FINE    |  getLeaves                                             took  0.04 seconds (wall clock time, 10765 timings
+FINE    |  insert                                                took  0.07 seconds (wall clock time, 16240 timings
+FINE    |  join                                                  took  0.03 seconds (wall clock time, 26391 timings
 FINE    |  split                                                 took  0.02 seconds (wall clock time, 165 timings
 FINE    |  
 FINE    |  [merge event processing]
 FINE    |  big                                                   took  0.05 seconds (wall clock time, 601 timings
-FINE    |  merge event recording                                 took  0.15 seconds (wall clock time, 4815 timings
+FINE    |  merge event recording                                 took  0.17 seconds (wall clock time, 4815 timings
 FINE    |  merge events in joined cells                          took  0.06 seconds (wall clock time, 5425 timings
-FINE    |  merged glyph insert                                   took  9.11 seconds (wall clock time, 5425 timings
-FINE    |  nested merges                                         took  0.21 seconds (wall clock time, 5425 timings
-FINE    |  total                                                 took  9.71 seconds (wall clock time, 5425 timings
+FINE    |  merged glyph insert                                   took  9.12 seconds (wall clock time, 5425 timings
+FINE    |  nested merges                                         took  0.20 seconds (wall clock time, 5425 timings
+FINE    |  total                                                 took  9.73 seconds (wall clock time, 5425 timings
 FINE    |  tracker updating                                      took  0.06 seconds (wall clock time, 5425 timings

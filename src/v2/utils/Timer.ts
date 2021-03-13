@@ -14,6 +14,8 @@ export class Timer {
   constructor() {
     this.count = 0;
     this.totalElapsed = 0;
+    this.running = false
+    this.started = null as any
     this.start();
   }
 
@@ -49,7 +51,7 @@ export class Timer {
    * @param name   Name of event that was timed.
    * @param level  Level to log at.
    */
-  public log(logger: Logger, name: string, level: Level = Level.FINE): void {
+  public log(logger: Logger | null, name: string, level: Level = Level.FINE): void {
     this.stop();
     if (logger !== null) {
       logger.log(

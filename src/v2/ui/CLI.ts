@@ -10,7 +10,7 @@ import { File } from '../java/File';
 import { CsvIO } from '../io/CsvIO';
 import { PointIO } from '../io/PointIO';
 
-const LOGGER: Logger = Constants.LOGGING_ENABLED
+const LOGGER: Logger | null = Constants.LOGGING_ENABLED
   ? Logger.getLogger('QuadTreeClusterer')
   : null;
 

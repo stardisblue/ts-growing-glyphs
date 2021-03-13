@@ -29,7 +29,7 @@ class GlobalState {
   readonly createdFromTmp: [HierarchicalClustering, HierarchicalClustering] = [
     null,
     null,
-  ];
+  ] as any;
   readonly trackersNeedingUpdate: ArrayList<Glyph> = new ArrayList();
   readonly orphanedCells: ArrayList<QuadTree> = new ArrayList();
   // mapping from glyphs to (currently) highest level nodes in resulting clustering
@@ -41,7 +41,7 @@ class GlobalState {
   // list of alive big glyphs; these are not in the QuadTree and thus tracked separately
   readonly bigGlyphs: ArrayList<Glyph> = new ArrayList(2);
   // used as output parameter of #processNestedMerges to indicate if a big glyph was merged
-  mergedBigGlyph: boolean;
+  mergedBigGlyph: boolean = false;
 
   constructor(map: HashMap<Glyph, HierarchicalClustering>) {
     this.map = map;
@@ -60,12 +60,12 @@ export class QuadTreeClusterer {
   /**
    * Resulting clustering.
    */
-  protected result: HierarchicalClustering;
+  protected result: HierarchicalClustering | null;
 
   /**
    * Single object that is used to easily find merge events to be added.
    */
-  private rec: FirstMergeRecorder;
+  private rec: FirstMergeRecorder | null;
 
   constructor(tree: QuadTree) {
     this.tree = tree;
@@ -110,9 +110,9 @@ export class QuadTreeClusterer {
       //     Constants.MAX_GLYPHS_PER_CELL, Double.toString(Constants.MIN_CELL_SIZE)});
       if (LOGGER.isLoggable(Level.FINE)) {
         let n = 0;
-        for (const leaf of this.tree.getLeaves()) {
-          Stats.record("glyphs per cell", leaf.getGlyphs().size());
-          for (const glyph of leaf.getGlyphs()) {
+        for (const leaf of this.tree.__getLeaves()) {
+          Stats.record("glyphs per cell", leaf.getGlyphs()!.size());
+          for (const glyph of leaf.getGlyphs()!) {
             n += glyph.getN();
           }
         }
@@ -134,8 +134,8 @@ export class QuadTreeClusterer {
     const state = new GlobalState(map);
     // start recording merge events
     const rect = this.tree.getRectangle();
-    for (const leaf of this.tree.getLeaves()) {
-      const glyphs = leaf.getGlyphs().toArray();
+    for (const leaf of this.tree.__getLeaves()) {
+      const glyphs = leaf.getGlyphs()!.toArray();
       for (let i = 0; i < glyphs.length; ++i) {
         // add events for when two glyphs in the same cell touch
         if (LOGGER !== null) LOGGER.log(Level.FINEST, glyphs[i].toString());
@@ -335,7 +335,7 @@ export class QuadTreeClusterer {
 
     // check glyphs in cells of the given glyph
     let bAt; // before `at`, used to store time/zoom level of found merges
-    for (const cell of this.tree.getLeaves(wth, at)) {
+    for (const cell of this.tree.__getLeavesGlyphAt(wth, at)) {
       for (const glyph of cell.getGlyphsAlive()) {
         if ((bAt = GrowFunction.intersectAt(wth, glyph)) <= at) {
           foundOverlap = true;
@@ -588,7 +588,7 @@ export class QuadTreeClusterer {
       ) {
         // 1. split and move glyphs in cell to appropriate leaf cells
         //    (this may split the cell more than once!)
-        neighbor.split(oAt);
+        neighbor.__splitAt(oAt);
         // 2. invalidate out of cell events with `neighbor`
         //    → done by discarding such events as they exit the queue
         //      (those events work on non-leaf cells; detectable)
@@ -599,14 +599,14 @@ export class QuadTreeClusterer {
         // this step is currently not implemented
         // 4. continue with making events in appropriate cells instead
         //    of `neighbor` or all glyphs associated with `neighbor`
-        grownInto = neighbor.getLeaves(glyph, oAt);
+        grownInto = neighbor.__getLeavesGlyphAt(glyph, oAt);
         if (LOGGER !== null && LOGGER.isLoggable(Level.FINE)) {
-          for (const iin of neighbor.getLeaves()) {
+          for (const iin of neighbor.__getLeaves()) {
             Stats.record("glyphs per cell", iin.getGlyphsAlive().size());
           }
         }
       } else {
-        grownInto = neighbor.getLeaves();
+        grownInto = neighbor.__getLeaves();
       }
 
       this.rec.from(glyph);
@@ -689,7 +689,7 @@ export class QuadTreeClusterer {
     s.mergedBigGlyph = false;
     // create a merged glyph and ensure that the merged glyph does not
     // overlap other glyphs at this time - repeat until no more overlap
-    let merged = null;
+    let merged: Glyph| null = null;
     let mergedHC = null;
     let mergedAt = m.getAt();
 
@@ -720,8 +720,8 @@ export class QuadTreeClusterer {
             ...Utils.map(m.getGlyphs(), s.map, s.createdFromTmp)
           );
         } else {
-          mergedHC.alsoCreatedFrom(s.map.get(m.getGlyphs()[1]));
-          merged = new Glyph(merged, m.getGlyphs()[1]);
+          mergedHC.alsoCreatedFrom(s.map.get(m.getGlyphs()[1])!);
+          merged = new Glyph(merged!, m.getGlyphs()[1]);
           mergedHC.setGlyph(merged);
           if (m.getGlyphs()[1].isBig()) {
             s.mergedBigGlyph = true;
@@ -926,7 +926,7 @@ export class QuadTreeClusterer {
   private step(): void {
     if (Constants.STATS_ENABLED) {
       Stats.record("QuadTree cells", Utils.size(this.tree.iterator()));
-      Stats.record("QuadTree leaves", this.tree.getLeaves().size());
+      Stats.record("QuadTree leaves", this.tree.__getLeaves().size());
       Stats.record("QuadTree height", this.tree.getTreeHeight());
     }
   }
