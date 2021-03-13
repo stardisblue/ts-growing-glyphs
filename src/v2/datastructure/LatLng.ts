@@ -6,6 +6,8 @@ export class LatLng {
   lng: any;
 
   constructor(lat: number, lng: number) {
+    if (Number.isNaN(lat) || Number.isNaN(lng))
+      throw new Error('bad coordinates');
     this.lat = lat;
     this.lng = lng;
   }

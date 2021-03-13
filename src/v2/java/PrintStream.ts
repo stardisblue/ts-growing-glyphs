@@ -3,9 +3,11 @@ import { File } from './File';
 
 export class PrintStream {
   ws: WriteStream;
+  private file: File;
 
   constructor(file: File) {
-    this.ws = createWriteStream(file.name);
+    this.file = file;
+    this.reset()
     this.ws.on('error', function (err) {
       throw err;
     });
@@ -18,5 +20,9 @@ export class PrintStream {
 
   println(msg: string) {
     this.ws.write(msg + '\n');
+  }
+
+  reset() {
+    this.ws = createWriteStream(this.file.name)
   }
 }

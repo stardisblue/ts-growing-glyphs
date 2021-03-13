@@ -13,11 +13,12 @@ export class Logger {
   }
 
   private _name: any;
-  private static _ps?: PrintStream;
+  static _ps?: PrintStream;
   private level: number;
 
   private constructor(name: string) {
     this._name = name;
+    this.level = Level.FINEST;
   }
 
   static getLogger(name: string) {
@@ -32,15 +33,50 @@ export class Logger {
   }
 
   static setPrintStream(ps: PrintStream) {
+    ps.reset();
     this._ps = ps;
   }
 
   log(level: Level, msg: string) {
     if (level >= this.level) {
+      let prefix = '';
+      switch (level) {
+        case Level.OFF:
+          prefix = 'OFF';
+
+          break;
+        case Level.SEVERE:
+          prefix = 'SEVERE';
+          break;
+        case Level.WARNING:
+          prefix = 'WARNING';
+          break;
+        case Level.INFO:
+          prefix = 'INFO';
+          break;
+        case Level.CONFIG:
+          prefix = 'CONFIG';
+          break;
+        case Level.FINE:
+          prefix = 'FINE';
+          break;
+        case Level.FINER:
+          prefix = 'FINER';
+          break;
+        case Level.FINEST:
+          prefix = 'FINEST';
+          break;
+        case Level.ALL:
+          prefix = 'All';
+          break;
+      }
+
+      prefix = prefix.padEnd(8) + '|  ';
+
       if (Logger._ps) {
-        Logger._ps.println(msg);
+        Logger._ps.println(prefix + msg);
       } else {
-        console.log(msg);
+        console.log(prefix + msg);
       }
     }
   }

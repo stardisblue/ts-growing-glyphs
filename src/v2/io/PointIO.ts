@@ -21,8 +21,11 @@ export class PointIO {
     }
     try {
       const reader = new Scanner(file);
-      while (reader.hasNextLine()) {
-        const [x, y, n] = (await reader.nextLine()).split(' ').map(parseFloat);
+      while (await reader.hasNextLine()) {
+        const [x, y, n] = (await reader.nextLine())
+          .trim()
+          .split(/\s+/)
+          .map(parseFloat);
         // while (reader.hasNextDouble()) {
         //     const x = reader.nextDouble();
         //     const y = reader.nextDouble();

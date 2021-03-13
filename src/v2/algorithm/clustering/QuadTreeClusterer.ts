@@ -177,7 +177,7 @@ export class QuadTreeClusterer {
     }
     // merge glyphs until no pairs to merge remain
     let e: Event;
-    while ((e = this.getNextEvent(q, state)) != null) {
+    while ((e = this.getNextEvent(q, state)) !== null) {
       // log on a slightly higher urgency level when one of the glyphs is tracked
       if (LOGGER != null) {
         if (LOGGER.getLevel() > Level.FINER) {

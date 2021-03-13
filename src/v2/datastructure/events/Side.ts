@@ -56,7 +56,7 @@ export class Side {
   static quadrant(
     ...args: [number] | [Rectangle2D, number, number]
   ): [Side, Side] | number {
-    if (args[0]) {
+    if (args.length > 0) {
       if (isNumber(args[0])) {
         return this.__quadrantIdx(args[0]);
       } else if (isRNN(args)) {

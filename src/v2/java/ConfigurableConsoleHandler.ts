@@ -1,5 +1,5 @@
-import { PrintStream } from './PrintStream';
-import { Logger } from './Logger';
+import {PrintStream} from "./PrintStream";
+import {Logger} from "./Logger";
 
 export class ConfigurableConsoleHandler {
   static redirectTo(ps: PrintStream) {
@@ -7,5 +7,7 @@ export class ConfigurableConsoleHandler {
     Logger.setPrintStream(ps);
   }
 
-  static undoRedirect() {}
+  static undoRedirect() {
+
+  }
 }

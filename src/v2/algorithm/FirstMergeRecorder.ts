@@ -18,7 +18,7 @@ import { QuadTree } from '../datastructure/QuadTree';
 import { GrowFunction } from '../datastructure/growfunction/GrowFunction';
 
 function getLogger() {
-  let l;
+  let l: Logger;
 
   return Constants.LOGGING_ENABLED &&
     (l = Logger.getLogger('FirstMergeRecorder')).isLoggable(Level.FINER)
@@ -67,7 +67,7 @@ export class FirstMerge {
       this.glyphs.add(new ArrayList(1));
     }
     this.size = 0;
-    if (LOGGER != null) {
+    if (LOGGER !== null) {
       LOGGER.log(Level.FINER, `constructed an empty FirstMerge #${this}`);
     }
   }
@@ -274,7 +274,7 @@ export class FirstMergeRecorder {
    * @return A reference to the singleton instance of this class.
    */
   public static getInstance(): FirstMergeRecorder {
-    return this.INSTANCE;
+    return this.INSTANCE ?? (this.INSTANCE = new FirstMergeRecorder());
   }
 
   /**
@@ -285,7 +285,7 @@ export class FirstMergeRecorder {
   /**
    * Singleton instance.
    */
-  private static readonly INSTANCE = new FirstMergeRecorder();
+  private static INSTANCE;
 
   private static readonly REUSABLE_RECORDS: ArrayDeque<FirstMerge> = new ArrayDeque();
 
@@ -361,7 +361,7 @@ export class FirstMergeRecorder {
       while ((merges = this.merge.pop(this)) != null) {
         for (const merge of merges) {
           if (LOGGER != null) {
-            LOGGER.log(Level.FINE, 'recorded {0}', merge);
+            LOGGER.log(Level.FINE, `recorded ${merge}`);
           }
           this._from.record(merge);
         }
@@ -396,7 +396,7 @@ export class FirstMergeRecorder {
    */
   public from(from: Glyph): void {
     if (LOGGER != null) {
-      LOGGER.log(Level.FINE, 'recording merges from {0}', from);
+      LOGGER.log(Level.FINE, `recording merges from ${from}`);
     }
     this._from = from;
     this.merge.reset();

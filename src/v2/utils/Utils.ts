@@ -504,7 +504,8 @@ export class Timers {
    * Returns a timestamp that can be used to measure elapsed time.
    */
   static now(): number {
-    return process.hrtime()[1];
+    const [seconds, nano] = process.hrtime();
+    return seconds * 10e9 + nano;
   }
 
   /**

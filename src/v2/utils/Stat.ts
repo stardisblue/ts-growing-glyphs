@@ -84,7 +84,7 @@ export class Stat {
   }
 
   record(value: number): void {
-    if (this.n == 0) {
+    if (this.n === 0) {
       this.n = 1;
       this.average = this.min = this.max = this.sum = value;
       return;

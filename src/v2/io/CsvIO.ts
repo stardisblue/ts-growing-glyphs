@@ -25,7 +25,7 @@ export class CsvIO {
 
     try {
       let reader = new Scanner(file);
-      if (!reader.hasNextLine()) {
+      if (!(await reader.hasNextLine())) {
         return -1;
       }
       const titleLine = await reader.nextLine();
@@ -39,14 +39,14 @@ export class CsvIO {
       }
       // read data
       const read = new HashMap<string, [LatLng, number]>();
-      while (reader.hasNextLine()) {
+      while (await reader.hasNextLine()) {
         const line = await reader.nextLine();
         const cols = line.split(splitOn);
         // skip missing and null coordinates
         if (
           cols.length <= Math.max(latInd, lngInd) ||
-          cols[latInd] === 'NULL' ||
-          cols[lngInd] === 'NULL'
+          cols[latInd].trim() === '' ||
+          cols[lngInd].trim() === ''
         ) {
           ignoredRead[0]++;
           continue;

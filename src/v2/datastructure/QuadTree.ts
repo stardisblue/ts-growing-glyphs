@@ -555,12 +555,13 @@ export class QuadTree implements Iterable<QuadTree> {
    */
   split(at: number);
   split(at?: number) {
-    throw new Error('better resolver');
-    if (at !== undefined) {
+    if (typeof at === 'number') {
       return this.__splitAt(at);
-    } else {
+    } else if (at === undefined) {
       return this.__split();
     }
+
+    throw new Error('better resolver');
   }
 
   /**
