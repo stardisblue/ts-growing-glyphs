@@ -38,6 +38,7 @@ export class Utils {
    * Returns the minimum Euclidean distance between a point and any point in
    * the given rectangle. This will in particular return -1 when the given
    * point is contained in the rectangle.
+   * @deprecated
    */
   static euclidean(rect: Rectangle2D, px: number, py: number): number;
   static euclidean(
@@ -93,7 +94,7 @@ export class Utils {
     }
     // determine the distance between the point and the point projected
     // onto the rectangle, or clamped into it, so to say
-    return this.euclidean(
+    return this.__euclideanAABB(
       px,
       py,
       this.clamp(px, rect.getMinX(), rect.getMaxX()),

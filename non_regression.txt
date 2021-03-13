@@ -1,1 +1,2 @@
-ENTRY into CsvIO#read()loaded 7104 locations
+FINE    | ENTRY into PointIO#read()
+INFO    | reading file took  0.01 seconds (wall clock time

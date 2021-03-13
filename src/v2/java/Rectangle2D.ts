@@ -58,7 +58,7 @@ export class Rectangle2D {
   }
 
   getMaxY() {
-    return this.y + this.width;
+    return this.y + this.height;
   }
 
   contains(x: number, y: number) {

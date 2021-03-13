@@ -80,10 +80,10 @@ export class ArrayList<T> implements Iterable<T> {
 
   set(index: number, item: T) {
     const old = this.__internal[index];
-    this.__internal[index] = item;
     if (old === undefined) {
       throw new Error('OutOfBoundException');
     }
+    this.__internal[index] = item;
     return old;
   }
 

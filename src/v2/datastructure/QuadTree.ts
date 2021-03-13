@@ -342,10 +342,10 @@ export class QuadTree implements Iterable<QuadTree> {
 
   getSide(side: Side) {
     return new Rectangle2D.Double(
-      this.cell.getX() + (side == Side.RIGHT ? this.cell.getWidth() : 0),
-      this.cell.getY() + (side == Side.BOTTOM ? this.cell.getHeight() : 0),
-      side == Side.TOP || side == Side.BOTTOM ? this.cell.getWidth() : 0,
-      side == Side.RIGHT || side == Side.LEFT ? this.cell.getHeight() : 0
+      this.cell.getX() + (side === Side.RIGHT ? this.cell.getWidth() : 0),
+      this.cell.getY() + (side === Side.BOTTOM ? this.cell.getHeight() : 0),
+      side == Side.TOP || side ===Side.BOTTOM ? this.cell.getWidth() : 0,
+      side == Side.RIGHT || side === Side.LEFT ? this.cell.getHeight() : 0
     );
   }
 
@@ -402,7 +402,7 @@ export class QuadTree implements Iterable<QuadTree> {
    */
   insert(glyph: Glyph, at: number) {
     Stats.count('QuadTree insert');
-    const intersect = GrowFunction.intersectAt(glyph, this.cell);
+    const intersect = GrowFunction.__intersectAtGlyphRectangle(glyph, this.cell);
     // if we intersect at some point, but later than current time
     // (this means that a glyph is in a cell already when its border is in
     //  the cell! see GrowFunction#intersectAt(Glyph, Rectangle2D)
@@ -627,7 +627,7 @@ export class QuadTree implements Iterable<QuadTree> {
   toString(): string {
     return `${
       QuadTree.name
-    }[cell = [${this.cell.getMinX()} ; ${this.cell.getMaxX()}] x [${this.cell.getMaxX()} ; ${this.cell.getMaxY()}]]`;
+    }[cell = [${this.cell.getMinX()} ; ${this.cell.getMaxX()}] x [${this.cell.getMinY()} ; ${this.cell.getMaxY()}]]`;
     // return String.format("%s[cell = [%.2f ; %.2f] x [%.2f ; %.2f]]",
     //     this.getClass().getName(),
     //     cell.getMinX(), cell.getMaxX(), cell.getMinY(), cell.getMaxY());

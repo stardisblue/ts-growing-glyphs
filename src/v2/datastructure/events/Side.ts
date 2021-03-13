@@ -15,16 +15,22 @@ function isRNN(args: any[]): args is [Rectangle2D, number, number] {
 }
 
 export class Side {
-  public static readonly TOP = new Side(0, 1, 0);
-  public static readonly RIGHT = new Side(1, 3, 1);
-  public static readonly BOTTOM = new Side(2, 3, 2);
-  public static readonly LEFT = new Side(0, 2, 3);
+  public static readonly TOP = new Side("TOP", 0, 1, 0);
+  public static readonly RIGHT = new Side("RIGHT", 1, 3, 1);
+  public static readonly BOTTOM = new Side("BOTTOM", 2, 3, 2);
+  public static readonly LEFT = new Side("LEFT",0, 2, 3);
   private readonly _quadrants: [number, number];
   private _others: [Side, Side, Side] | null;
-  private _id: number;
+  private readonly _id: number;
   private static _values = [Side.TOP, Side.RIGHT, Side.BOTTOM, Side.LEFT];
+  private readonly _name: string;
 
-  constructor(a: number, b: number, id: number) {
+  toString(){
+    return this._name;
+  }
+
+  constructor(name: string,a: number, b: number, id: number) {
+    this._name= name;
     this._id = id;
     this._others = null;
     this._quadrants = [a, b];
@@ -133,7 +139,7 @@ export class Side {
       let i = 0;
       for (const that of Side.values()) {
         if (that !== this) {
-          this.others[i++] = that;
+          this._others[i++] = that;
         }
       }
     }

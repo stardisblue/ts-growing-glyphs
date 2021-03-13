@@ -412,7 +412,7 @@ export class Glyph {
     let added = false;
     while (!this.outOfCellEvents.isEmpty()) {
       const o = this.outOfCellEvents.poll();
-      if (l != null) {
+      if (l !== null) {
         l.log(Level.FINEST, `popping ${o} into the queue`);
       }
       q.add(o);

@@ -1,5 +1,5 @@
-import { PrintStream } from './PrintStream';
-import { Constants } from '../utils/Constants';
+import {PrintStream} from "./PrintStream";
+import {Constants} from "../utils/Constants";
 
 const _loggers = new Map<string, Logger>();
 
@@ -39,41 +39,41 @@ export class Logger {
 
   log(level: Level, msg: string) {
     if (level >= this.level) {
-      let prefix = '';
-      let offset = 2
+      let prefix = "";
+      let offset = 2;
       switch (level) {
         case Level.OFF:
-          prefix = 'OFF';
+          prefix = "OFF";
           break;
         case Level.SEVERE:
-          prefix = 'SEVERE';
+          prefix = "SEVERE";
           break;
         case Level.WARNING:
-          prefix = 'WARNING';
+          prefix = "WARNING";
           break;
         case Level.INFO:
-          prefix = 'INFO';
+          prefix = "INFO";
           break;
         case Level.CONFIG:
-          prefix = 'CONFIG';
+          prefix = "CONFIG";
           break;
         case Level.FINE:
-          prefix = 'FINE';
+          prefix = "FINE";
           break;
         case Level.FINER:
-          prefix = 'FINER';
-          offset = 4
+          prefix = "FINER";
+          offset = 4;
           break;
         case Level.FINEST:
-          prefix = 'FINEST';
-          offset = 6
+          prefix = "FINEST";
+          offset = 6;
           break;
         case Level.ALL:
-          prefix = 'All';
+          prefix = "All";
           break;
       }
 
-      prefix = prefix.padEnd(8) + '|'.padEnd(offset);
+      prefix = prefix.padEnd(8) + "|" + "".padEnd(offset);
 
       if (Logger._ps) {
         Logger._ps.println(prefix + msg);

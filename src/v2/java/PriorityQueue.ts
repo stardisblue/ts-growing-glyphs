@@ -1,7 +1,7 @@
 import TinyQueue from "tinyqueue";
 import {Comparable} from "./Comparable";
 
-export class PriorityQueue<T extends Comparable<any>> {
+export class PriorityQueue<T extends Comparable<T>> {
   private __internal: TinyQueue<T>;
 
   constructor(n?: number) {

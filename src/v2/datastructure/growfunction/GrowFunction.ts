@@ -82,7 +82,7 @@ export class GrowFunction {
    * @param g    Glyph to consider.
    */
   static __distRectangleGlyph(rect: Rectangle2D, g: Glyph): number {
-    const d = Utils.euclidean(rect, g.getX(), g.getY());
+    const d = Utils.__euclideanRectangleXY(rect, g.getX(), g.getY());
     if (d < 0) {
       return Number.NEGATIVE_INFINITY;
     }
@@ -101,7 +101,7 @@ export class GrowFunction {
    * {@code cell}.
    */
   static exitAt(glyph: Glyph, cell: QuadTree, side: Side): number {
-    return this.intersectAt(cell.getSide(side), glyph);
+    return this.__intersectAtRectangleGlyph(cell.getSide(side), glyph);
   }
 
   /**
@@ -173,7 +173,7 @@ export class GrowFunction {
    * {@code glyph} is right outside {@code r}, but its border overlaps it.
    */
   static __intersectAtRectangleGlyph(r: Rectangle2D, g: Glyph): number {
-    const d = this.dist(r, g);
+    const d = this.__distRectangleGlyph(r, g);
     if (!Number.isFinite(d)) {
       return d;
     }
@@ -185,7 +185,7 @@ export class GrowFunction {
    * of parameters. This is a convenience function.
    */
   static __intersectAtGlyphRectangle(glyph: Glyph, r: Rectangle2D): number {
-    return this.intersectAt(r, glyph);
+    return this.__intersectAtRectangleGlyph(r, glyph);
   }
 
   /**
