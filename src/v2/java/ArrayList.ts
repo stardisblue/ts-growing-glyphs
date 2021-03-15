@@ -1,10 +1,10 @@
-import { Collectors } from './Collectors';
+import {Collectors} from "./Collectors";
 
 export class ArrayList<T> implements Iterable<T> {
   __internal: T[];
 
-  toString(){
-    return `[${this.__internal.join(', ')}]`
+  toString() {
+    return `[${this.__internal.join(", ")}]`;
   }
 
   static __new<T>(list: T[]) {
@@ -34,8 +34,8 @@ export class ArrayList<T> implements Iterable<T> {
     return this.__internal[Symbol.iterator]();
   }
 
-  get length (){
-    return this.__internal.length
+  get length() {
+    return this.__internal.length;
   }
 
   clear() {
@@ -67,7 +67,7 @@ export class ArrayList<T> implements Iterable<T> {
 
   removeI(index: number) {
     if (index === -1) {
-      throw new Error('IndexOutOfBoundsException');
+      throw new Error("IndexOutOfBoundsException");
     }
     const [item] = this.__internal.splice(index, 1);
     return item;
@@ -85,7 +85,7 @@ export class ArrayList<T> implements Iterable<T> {
   set(index: number, item: T) {
     const old = this.__internal[index];
     if (old === undefined) {
-      throw new Error('OutOfBoundException');
+      throw new Error("OutOfBoundException");
     }
     this.__internal[index] = item;
     return old;
@@ -111,8 +111,8 @@ export class ArrayList<T> implements Iterable<T> {
     return this.__internal.sort(comparator);
   }
 
-  toArray() {
-    return Array.from(this.__internal);
+  toArray<R = T>(cb: (T) => R = v => v) {
+    return Array.from(this.__internal, cb);
   }
 
   copy() {
@@ -129,7 +129,7 @@ class Optional<K> {
 
   get() {
     if (this.value === null) {
-      throw new Error('null pointer exception XD');
+      throw new Error("null pointer exception XD");
     }
     return this.value;
   }
@@ -142,8 +142,8 @@ export class Stream<T> {
     this.__internal = array;
   }
 
-  get length (){
-    return this.__internal.length
+  get length() {
+    return this.__internal.length;
   }
 
   filter(callbackfn: (item: T, index: number, arr: T[]) => boolean) {

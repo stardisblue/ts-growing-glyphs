@@ -1,11 +1,12 @@
-import { Glyph, isGlyph } from '../Glyph';
-import { isRectangle2D, Rectangle2D } from '../../java/Rectangle2D';
-import { QuadTree } from '../QuadTree';
-import { Side } from '../events/Side';
-import { Utils } from '../../utils/Utils';
+import {Glyph, isGlyph} from "../Glyph";
+import {isRectangle2D, Rectangle2D} from "../../java/Rectangle2D";
+import {QuadTree} from "../QuadTree";
+import {Side} from "../events/Side";
+import {Utils} from "../../utils/Utils";
 
 export class Shape extends Rectangle2D {
-  static Double = class Double extends Shape {};
+  static Double = class Double extends Shape {
+  };
 
   getBounds2D(): Rectangle2D {
     return this;
@@ -41,7 +42,7 @@ export class GrowFunction {
    */
   static dist(rect: Rectangle2D, g: Glyph): number;
   static dist(a: Glyph | Rectangle2D, b: Glyph): number {
-    if (a === null) throw Error('unable to resolve');
+    if (a === null) throw Error("unable to resolve");
 
     if (isGlyph(a)) {
       return this.__distGlyphGlyph(a, b);
@@ -49,7 +50,7 @@ export class GrowFunction {
       return this.__distRectangleGlyph(a, b);
     }
 
-    throw Error('unable to resolve');
+    throw Error("unable to resolve");
   }
 
   /**
@@ -112,6 +113,7 @@ export class GrowFunction {
    * @param b Second glyph.
    * @return Zoom level at which {@code a} and {@code b} touch. Returns
    * {@link Double#NEGATIVE_INFINITY} if the two glyphs share coordinates.
+   * @deprecated
    */
   static intersectAt(a: Glyph, b: Glyph): number;
   /**
@@ -124,16 +126,18 @@ export class GrowFunction {
    * is contained in the rectangle, {@link Double#NEGATIVE_INFINITY} must be
    * returned. A negative value may still be returned in case the
    * {@code glyph} is right outside {@code r}, but its border overlaps it.
+   * @deprecated
    */
   static intersectAt(r: Rectangle2D, g: Glyph): number;
   /**
    * Same as {@link #intersectAt(Rectangle2D, Glyph)}, just with different order
    * of parameters. This is a convenience function.
+   * @deprecated
    */
   static intersectAt(glyph: Glyph, r: Rectangle2D): number;
   static intersectAt(a: Glyph | Rectangle2D, b: Glyph | Rectangle2D): number {
     if (a === null || b === null) {
-      throw new Error('unable to resolve');
+      throw new Error("unable to resolve");
     }
     if (isGlyph(a) && isGlyph(b)) {
       return this.__intersectAtGlyphGlyph(a, b);
@@ -142,7 +146,7 @@ export class GrowFunction {
     } else if (isRectangle2D(a) && isGlyph(b)) {
       return this.__intersectAtRectangleGlyph(a, b);
     }
-    throw new Error('unable to resolve');
+    throw new Error("unable to resolve");
   }
 
   /**

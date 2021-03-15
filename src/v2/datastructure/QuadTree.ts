@@ -72,19 +72,19 @@ export class QuadTree implements Iterable<QuadTree> {
    * @Deprecated
    */
   clear() {
-    if (this.children !== null) {
+    if (this.children != null) {
       for (const child of this.children) {
         child.clear();
       }
       this.children = null;
     }
-    if (this.glyphs !== null) {
+    if (this.glyphs != null) {
       for (const glyph of this.glyphs) {
         glyph.removeCell(this);
       }
       this.glyphs.clear();
     } else {
-      this.glyphs = new ArrayList(Constants.MAX_GLYPHS_PER_CELL);
+      this.glyphs = new ArrayList<Glyph>(Constants.MAX_GLYPHS_PER_CELL);
     }
     for (const neighborsOnSide of this.neighbors) {
       neighborsOnSide.clear();
@@ -122,11 +122,11 @@ export class QuadTree implements Iterable<QuadTree> {
     return this.glyphs;
   }
 
-  public getGlyphsAlive(): ArrayList<Glyph> | null {
-    if (this.glyphs === null) {
-      return null;
+  public getGlyphsAlive(): ArrayList<Glyph> {
+    if (this.glyphs == null) {
+      return this.glyphs;
     }
-    const result = new ArrayList<Glyph>();
+    let result = new ArrayList<Glyph>();
     for (const glyph of this.glyphs) {
       if (glyph.isAlive()) {
         result.add(glyph);
@@ -414,13 +414,13 @@ export class QuadTree implements Iterable<QuadTree> {
     Timers.start("[QuadTree] insert");
     let inserted = 0; // keep track of number of cells we insert into
     if (this.isLeaf()) {
-      if (!this.glyphs!.contains(glyph)) {
-        this.glyphs!.add(glyph);
+      if (!this.glyphs.contains(glyph)) {
+        this.glyphs.add(glyph);
         glyph.addCell(this);
         inserted = 1;
       }
     } else {
-      for (const child of this.children!) {
+      for (const child of this.children) {
         inserted += child.insert(glyph, at);
       }
     }
@@ -439,21 +439,17 @@ export class QuadTree implements Iterable<QuadTree> {
    */
   insertCenterOf(glyph: Glyph) {
     Stats.count("QuadTree insertCenterOf");
-    if (
-      glyph.getX() < this.cell.getMinX() ||
-      glyph.getX() > this.cell.getMaxX() ||
-      glyph.getY() < this.cell.getMinY() ||
-      glyph.getY() > this.cell.getMaxY()
-    ) {
+    if (glyph.getX() < this.cell.getMinX() || glyph.getX() > this.cell.getMaxX() ||
+      glyph.getY() < this.cell.getMinY() || glyph.getY() > this.cell.getMaxY()) {
       Stats.count("QuadTree insertCenterOf", false);
       return false;
     }
     Stats.count("QuadTree insertCenterOf", true);
     // can we insert here?
     Timers.start("[QuadTree] insert");
-    if (this.isLeaf() && this.glyphs!.size() < Constants.MAX_GLYPHS_PER_CELL) {
-      if (!this.glyphs!.contains(glyph)) {
-        this.glyphs!.add(glyph);
+    if (this.isLeaf() && this.glyphs.size() < Constants.MAX_GLYPHS_PER_CELL) {
+      if (!this.glyphs.contains(glyph)) {
+        this.glyphs.add(glyph);
         glyph.addCell(this);
       }
       return true;
@@ -463,9 +459,8 @@ export class QuadTree implements Iterable<QuadTree> {
       this.__split();
     }
     // insert into correct child
-    this.children![
-      Side.quadrant(this.cell, glyph.getX(), glyph.getY())
-      ].insertCenterOf(glyph);
+    this.children[Side.quadrant(this.cell, glyph.getX(), glyph.getY())]
+      .insertCenterOf(glyph);
     Timers.stop("[QuadTree] insert");
     return true;
   }
@@ -546,6 +541,7 @@ export class QuadTree implements Iterable<QuadTree> {
    * to the relevant child cells.
    *
    * @see #split(double)
+   * @deprecated
    */
   split(): void;
   /**
@@ -554,6 +550,7 @@ export class QuadTree implements Iterable<QuadTree> {
    *
    * @param at Timestamp/zoom level at which split takes place.
    * @see #split()
+   * @deprecated
    */
   split(at: number): void;
   split(at?: number) {
@@ -601,10 +598,10 @@ export class QuadTree implements Iterable<QuadTree> {
     Timers.start("[QuadTree] split");
     this.splitCell();
     // possibly distribute glyphs
-    if (!this.glyphs!.isEmpty()) {
+    if (!this.glyphs.isEmpty()) {
       // insert glyph in every child cell it overlaps
       // (a glyph can be inserted into more than one cell!)
-      for (const glyph of this.glyphs!) {
+      for (const glyph of this.glyphs) {
         // don't bother with dead glyphs
         if (glyph.isAlive()) {
           this.insert(glyph, at);
@@ -613,8 +610,8 @@ export class QuadTree implements Iterable<QuadTree> {
       // only maintain glyphs in leaves
       this.glyphs = null;
       // ensure that split did in fact have an effect
-      for (const child of this.children!) {
-        if (child.glyphs!.size() > Constants.MAX_GLYPHS_PER_CELL) {
+      for (const child of this.children) {
+        if (child.glyphs.size() > Constants.MAX_GLYPHS_PER_CELL) {
           child.__splitAt(at);
         }
       }
@@ -753,12 +750,12 @@ export class QuadTree implements Iterable<QuadTree> {
       return false;
     }
     let s = 0;
-    for (const child of this.children!) {
+    for (const child of this.children) {
       if (!child.isLeaf()) {
         Timers.stop("[QuadTree] join");
         return false;
       }
-      s += child.getGlyphsAlive()!.size();
+      s += child.getGlyphsAlive().size();
     }
     if (s > Constants.MAX_GLYPHS_PER_CELL) {
       Timers.stop("[QuadTree] join");
@@ -768,9 +765,9 @@ export class QuadTree implements Iterable<QuadTree> {
     // do a join, become a leaf, adopt glyphs and neighbors of children
     Stats.count("QuadTree join cells");
     this.glyphs = new ArrayList(Constants.MAX_GLYPHS_PER_CELL);
-    for (let quadrant = 0; quadrant < this.children!.length; ++quadrant) {
-      const child = this.children![quadrant];
-      for (let glyph of child.getGlyphsAlive()!) {
+    for (let quadrant = 0; quadrant < this.children.length; ++quadrant) {
+      const child = this.children[quadrant];
+      for (const glyph of child.getGlyphsAlive()) {
         if (!this.glyphs.contains(glyph)) {
           this.glyphs.add(glyph);
           glyph.addCell(this);
@@ -796,9 +793,8 @@ export class QuadTree implements Iterable<QuadTree> {
     for (const side of Side.values()) {
       for (const neighbor of this.neighbors.get(side.ordinal())) {
         const neighborNeighbors = neighbor.neighbors.get(
-          side.opposite().ordinal()
-        );
-        for (const child of this.children!) {
+          side.opposite().ordinal());
+        for (const child of this.children) {
           neighborNeighbors.remove(child);
         }
         // the below does not need an "interval overlaps" check; if the
@@ -811,7 +807,7 @@ export class QuadTree implements Iterable<QuadTree> {
     Timers.stop("[QuadTree] join");
 
     // recursively check if parent could join now
-    if (this.parent != null) {
+    if (parent != null) {
       this.parent.joinMaybe(at);
     }
 

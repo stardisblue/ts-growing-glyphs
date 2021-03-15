@@ -147,6 +147,7 @@ export class FirstMerge {
     let thisInd = 0;
     let thatInd = 0;
     let result = new FirstMerge();
+
     for (let i = 0; i < Constants.MAX_MERGES_TO_RECORD; ++i) {
       // need to be careful here that we don't have both lists
       // reference the same sublist; won't go well with resetting
@@ -155,6 +156,7 @@ export class FirstMerge {
         Utils.swap(result.glyphs, i, that.glyphs, thatInd);
         thatInd++;
       } else if (that.at.get(thatInd) === this.at.get(thisInd) && that.at.get(thatInd) !== Number.POSITIVE_INFINITY) {
+        // because in JAVA it's
         //! } else if (that.at.get(thatInd) == this.at.get(thisInd)) {
         // AND NOT
         //! } else if (that.at.get(thatInd).equals(this.at.get(thisInd))) {

@@ -135,7 +135,7 @@ export class QuadTreeClusterer {
     // start recording merge events
     const rect = this.tree.getRectangle();
     for (const leaf of this.tree.__getLeaves()) {
-      const glyphs = leaf.getGlyphs()!.toArray();
+      const glyphs = leaf.getGlyphs()!.toArray((g) => new Glyph(g));
       for (let i = 0; i < glyphs.length; ++i) {
         // add events for when two glyphs in the same cell touch
         if (LOGGER !== null) LOGGER.log(Level.FINEST, glyphs[i].toString());
