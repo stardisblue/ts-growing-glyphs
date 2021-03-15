@@ -384,8 +384,8 @@ export class Glyph {
           wth.trackedBy.add(this);
         }
       }
-      if (l != null) {
-        l.log(Level.FINEST, `→ merge at ${merge.getAt()} with ${wth}`);
+      if (l !== null) {
+        l.log(Level.FINEST, `→ merge at ${merge.getAt().toFixed(3)} with ${wth}`);
       }
       // we found an event and added it to the queue, return
       return true;

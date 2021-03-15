@@ -18,7 +18,7 @@ import {QuadTree} from "../datastructure/QuadTree";
 import {GrowFunction} from "../datastructure/growfunction/GrowFunction";
 
 function getLogger() {
-  let l: Logger|null;
+  let l: Logger | null;
 
   return Constants.LOGGING_ENABLED &&
   (l = Logger.getLogger("FirstMergeRecorder"))?.isLoggable(Level.FINER)
@@ -102,7 +102,7 @@ export class FirstMerge {
     if (LOGGER != null) {
       LOGGER.log(
         Level.FINER,
-        `#${this} now has glyphs ${this.glyphs.toArray().join(', ')} at [${this.at.toArray().join(', ')}]`
+        `#${this} now has glyphs ${this.glyphs.toArray().join(", ")} at [${this.at.toArray().join(", ")}]`
       );
       // LOGGER.log(Level.FINER, "#{0} now has glyphs {1} at {2}",
       //     new Object[]{
@@ -176,7 +176,7 @@ export class FirstMerge {
     if (LOGGER != null) {
       LOGGER.log(
         Level.FINER,
-        `result #${result} of merging #${this} and ${that} has glyphs ${result.glyphs.toArray()} at ${result.at.toArray()} (storing in #${this} now)`
+        `result #${result} of merging #${this} and ${that} has glyphs ${result.glyphs.toArray()} at ${result.at} (storing in #${this} now)`
       ); // LOGGER.log(Level.FINER,
       //     "result #{0} of merging #{3} and #{4} has glyphs {1} at {2} (storing in #{3} now)",
       //     new Object[]{
@@ -240,10 +240,10 @@ export class FirstMerge {
     }
 
     const at = this.at.get(0);
-    Arrays.rotate(this.at, -1);
+    Arrays.rotate(this.at, 1);
     // Collections.rotate(this.at, -1);
     const glyphs = this.glyphs.get(0);
-    Arrays.rotate(this.glyphs, -1);
+    Arrays.rotate(this.glyphs, 1);
     // Collections.rotate(this.glyphs, -1);
     this.size--;
 
@@ -253,7 +253,7 @@ export class FirstMerge {
       result[i++] = new GlyphMerge(
         parent._from!,
         wth,
-        Constants.ROBUST ? GrowFunction.intersectAt(parent._from!, wth) : at
+        Constants.ROBUST ? GrowFunction.__intersectAtGlyphGlyph(parent._from!, wth) : at
       );
     }
     return result;
@@ -318,7 +318,7 @@ export class FirstMergeRecorder {
     // we are forced to create a new instance, do so
     const record = new FirstMerge();
     this.REUSABLE_RECORDS.addFirst(record);
-    if (this.firstReusedRecord == null) {
+    if (this.firstReusedRecord === null) {
       this.firstReusedRecord = record;
     }
     return record;
@@ -363,7 +363,7 @@ export class FirstMergeRecorder {
       }
       this.merge.getGlyphs().clear();
     } else {
-      while ((merges = this.merge.pop(this)!) != null) {
+      while ((merges = this.merge.pop(this)) !== null) {
         for (const merge of merges) {
           if (LOGGER !== null) {
             LOGGER.log(Level.FINE, `recorded ${merge}`);
@@ -380,7 +380,10 @@ export class FirstMergeRecorder {
     if (FirstMergeRecorder.collector == null) {
       FirstMergeRecorder.collector = (glyphs: Glyph[]) => {
         return glyphs.reduce<FirstMerge>(
-          (m, g) => (m.accept(this, g), m),
+          (m, g) => {
+            m.accept(this, g);
+            return m;
+          },
           FirstMergeRecorder.newInstance()
         );
       };

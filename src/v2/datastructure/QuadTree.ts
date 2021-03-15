@@ -807,7 +807,7 @@ export class QuadTree implements Iterable<QuadTree> {
     Timers.stop("[QuadTree] join");
 
     // recursively check if parent could join now
-    if (parent != null) {
+    if (this.parent != null) {
       this.parent.joinMaybe(at);
     }
 

@@ -111,8 +111,8 @@ export class ArrayList<T> implements Iterable<T> {
     return this.__internal.sort(comparator);
   }
 
-  toArray<R = T>(cb: (T) => R = v => v) {
-    return Array.from(this.__internal, cb);
+  toArray() {
+    return Array.from(this.__internal, );
   }
 
   copy() {

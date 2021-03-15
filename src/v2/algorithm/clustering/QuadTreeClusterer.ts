@@ -135,7 +135,7 @@ export class QuadTreeClusterer {
     // start recording merge events
     const rect = this.tree.getRectangle();
     for (const leaf of this.tree.__getLeaves()) {
-      const glyphs = leaf.getGlyphs()!.toArray((g) => new Glyph(g));
+      const glyphs = leaf.getGlyphs()!.toArray();
       for (let i = 0; i < glyphs.length; ++i) {
         // add events for when two glyphs in the same cell touch
         if (LOGGER !== null) LOGGER.log(Level.FINEST, glyphs[i].toString());
@@ -506,7 +506,7 @@ export class QuadTreeClusterer {
     }
     // handle orphaned cells
     const cell = o.getCell().getNonOrphanAncestor();
-    if (o.getCell() != cell) {
+    if (o.getCell() !== cell) {
       // if the event was for an internal border of this non-orphan cell,
       // we don't have to add merge events anymore
       if (
@@ -636,7 +636,7 @@ export class QuadTreeClusterer {
               continue;
             }
             // now, actually create an OUT_OF_CELL event
-            if (LOGGER != null)
+            if (LOGGER !== null)
               //     LOGGER.log(Level.FINEST, "→ out of {0} of {2} at {1}",
               //          new Object[]{side, at, in});
               LOGGER.log(Level.FINEST, `→ out of ${side} of ${iin} at ${at.toFixed(3)}`);
