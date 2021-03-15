@@ -154,7 +154,10 @@ export class FirstMerge {
         Utils.swap(result.at, i, that.at, thatInd);
         Utils.swap(result.glyphs, i, that.glyphs, thatInd);
         thatInd++;
-      } else if (that.at.get(thatInd) === this.at.get(thisInd)) {
+      } else if (that.at.get(thatInd) === this.at.get(thisInd) && that.at.get(thatInd) !== Number.POSITIVE_INFINITY) {
+        //! } else if (that.at.get(thatInd) == this.at.get(thisInd)) {
+        // AND NOT
+        //! } else if (that.at.get(thatInd).equals(this.at.get(thisInd))) {
         Utils.swap(result.at, i, that.at, thatInd);
         Utils.swap(result.glyphs, i, that.glyphs, thatInd);
         result.glyphs.get(i).addAll(this.glyphs.get(thisInd).toArray());

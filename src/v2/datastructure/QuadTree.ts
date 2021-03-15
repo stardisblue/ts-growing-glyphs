@@ -8,7 +8,6 @@ import {isRectangle2D, Rectangle2D} from "../java/Rectangle2D";
 import {ArrayList} from "../java/ArrayList";
 import {Glyph, isGlyph} from "./Glyph";
 import {isSide, Side} from "./events/Side";
-import {Collectors} from "../java/Collectors";
 import {Stats, Timers, Utils} from "../utils/Utils";
 import {Arrays} from "../java/Arrays";
 import {GrowFunction} from "./growfunction/GrowFunction";
@@ -704,7 +703,7 @@ export class QuadTree implements Iterable<QuadTree> {
    */
   __getLeavesSideRectangleResult(
     side: Side,
-    range: Rectangle2D  | null,
+    range: Rectangle2D | null,
     result: ArrayList<QuadTree>
   ) {
     if (range != null) {
@@ -886,19 +885,19 @@ export class QuadTree implements Iterable<QuadTree> {
       for (const quadrant of side.quadrants()) {
         const qi = Side.interval(this.children![quadrant].cell, side);
         // distribute own neighbors over children
-        this.children![quadrant].neighbors.get(side.ordinal()).addAll(
-          neighborsOnSide
-            .stream()
-            // ensure that the neighbor is "in range" of the child
-            // cell; technically, we would need to consider the
-            // side.opposite() of the neighbor, but since it reduces
-            // to a 1D comparison with the exact same interval, we
-            // save ourselves some calculation and do it like this
-            .filter((neighbor) =>
-              Utils.openIntervalsOverlap(qi, Side.interval(neighbor.cell, side))
-            )
-            .collect(Collectors.toList())
-        );
+        // ensure that the neighbor is "in range" of the child
+        // cell; technically, we would need to consider the
+        // side.opposite() of the neighbor, but since it reduces
+        // to a 1D comparison with the exact same interval, we
+        // save ourselves some calculation and do it like this
+        const list = new ArrayList<QuadTree>();
+        for (const neighbor of neighborsOnSide) {
+          if (Utils.openIntervalsOverlap(qi,
+            Side.interval(neighbor.cell, side))) {
+            list.add(neighbor);
+          }
+        }
+        this.children[quadrant].neighbors.get(side.ordinal()).addAll(list.toArray());
         // the children are neighbors of each other; record this
         this.children![quadrant].neighbors
           .get(side.opposite().ordinal())
