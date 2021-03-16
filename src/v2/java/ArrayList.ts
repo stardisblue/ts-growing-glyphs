@@ -112,11 +112,15 @@ export class ArrayList<T> implements Iterable<T> {
   }
 
   toArray() {
-    return Array.from(this.__internal, );
+    return Array.from(this.__internal);
   }
 
   copy() {
     return ArrayList.__new(Array.from(this.__internal));
+  }
+
+  sorted() {
+
   }
 }
 

@@ -73,7 +73,7 @@ export class FirstMerge {
   }
 
   public accept(parent: FirstMergeRecorder, candidate: Glyph): void {
-    if (LOGGER != null) {
+    if (LOGGER !== null) {
       LOGGER.log(Level.FINER, `accepting ${candidate} into #${this}`);
       // LOGGER.log(Level.FINER, "accepting {0} into #{1}",
       //     new Object[]{candidate, hashCode()});
@@ -99,7 +99,7 @@ export class FirstMerge {
       }
       // if at > this.at.get(i), try next i...
     }
-    if (LOGGER != null) {
+    if (LOGGER !== null) {
       LOGGER.log(
         Level.FINER,
         `#${this} now has glyphs ${this.glyphs.toArray().join(", ")} at [${this.at.toArray().join(", ")}]`
@@ -121,9 +121,9 @@ export class FirstMerge {
     if (LOGGER != null) {
       LOGGER.log(
         Level.FINER,
-        `combining #${this} and #${that};
-#${this} has glyphs ${this.glyphs.toArray()} at ${this.at.toArray()};
-#${that} has glyphs ${that.glyphs.toArray()} at ${that.at.toArray()}`
+        `combining #### and ####;
+#### has glyphs ${this.glyphs.toArray().join(", ")} at ${this.at};
+#### has glyphs ${that.glyphs.toArray().join(", ")} at ${that.at}`
       );
       // LOGGER.log(Level.FINER,
       //     "combining #{0} and #{1};\n#{0} has glyphs {2} at {3};\n#{1} has glyphs {4} at {5}",
@@ -146,7 +146,7 @@ export class FirstMerge {
     }
     let thisInd = 0;
     let thatInd = 0;
-    let result = new FirstMerge();
+    let result = FirstMergeRecorder.COMBINE_RESULT;
 
     for (let i = 0; i < Constants.MAX_MERGES_TO_RECORD; ++i) {
       // need to be careful here that we don't have both lists
@@ -155,7 +155,8 @@ export class FirstMerge {
         Utils.swap(result.at, i, that.at, thatInd);
         Utils.swap(result.glyphs, i, that.glyphs, thatInd);
         thatInd++;
-      } else if (that.at.get(thatInd) === this.at.get(thisInd) && that.at.get(thatInd) !== Number.POSITIVE_INFINITY) {
+      } else if (false) {
+      // } else if (that.at.get(thatInd) === this.at.get(thisInd) && that.at.get(thatInd) !== Number.POSITIVE_INFINITY) {
         // because in JAVA it's
         //! } else if (that.at.get(thatInd) == this.at.get(thisInd)) {
         // AND NOT
@@ -173,10 +174,10 @@ export class FirstMerge {
       }
       result.size++;
     }
-    if (LOGGER != null) {
+    if (LOGGER !== null) {
       LOGGER.log(
         Level.FINER,
-        `result #${result} of merging #${this} and ${that} has glyphs ${result.glyphs.toArray()} at ${result.at} (storing in #${this} now)`
+        `result #### of merging #### and #### has glyphs ${result.glyphs.toArray().join(', ')} at ${result.at} (storing in #${this} now)`
       ); // LOGGER.log(Level.FINER,
       //     "result #{0} of merging #{3} and #{4} has glyphs {1} at {2} (storing in #{3} now)",
       //     new Object[]{
@@ -234,7 +235,7 @@ export class FirstMerge {
     }
   }
 
-  pop(parent: FirstMergeRecorder): GlyphMerge[] | null {
+  pop(from: Glyph): GlyphMerge[] | null {
     if (this.size === 0) {
       return null;
     }
@@ -251,9 +252,9 @@ export class FirstMerge {
     let i = 0;
     for (const wth of glyphs) {
       result[i++] = new GlyphMerge(
-        parent._from!,
+        from,
         wth,
-        Constants.ROBUST ? GrowFunction.__intersectAtGlyphGlyph(parent._from!, wth) : at
+        Constants.ROBUST ? GrowFunction.__intersectAtGlyphGlyph(from, wth) : at
       );
     }
     return result;
@@ -292,8 +293,9 @@ export class FirstMergeRecorder {
    */
   private static INSTANCE: FirstMergeRecorder;
 
-  private static readonly REUSABLE_RECORDS: ArrayDeque<FirstMerge> = new ArrayDeque();
 
+  private static readonly REUSABLE_RECORDS: ArrayDeque<FirstMerge> = new ArrayDeque();
+  static readonly COMBINE_RESULT: FirstMerge = new FirstMerge();
   private static firstReusedRecord: FirstMerge | null = null;
 
   /**
@@ -301,16 +303,13 @@ export class FirstMergeRecorder {
    * and ready to accept and combine. This method may cache instances and reuse
    * them. {@link #REUSABLE_RECORDS} is used to this end.
    */
-  private static newInstance(): FirstMerge {
+  private static  newInstance():FirstMerge {
     // attempt to use cache
-    if (
-      this.REUSABLE_RECORDS.size() > 0 &&
-      (this.firstReusedRecord == null ||
-        this.REUSABLE_RECORDS.getLast() !== this.firstReusedRecord)
-    ) {
-      const record = this.REUSABLE_RECORDS.pollLast()!;
+    if (this.REUSABLE_RECORDS.size() > 0 && (this.firstReusedRecord == null ||
+      this.REUSABLE_RECORDS.getLast() != this.firstReusedRecord)) {
+      const record = this.REUSABLE_RECORDS.pollLast();
       this.REUSABLE_RECORDS.addFirst(record);
-      if (this.firstReusedRecord == null) {
+      if (this.firstReusedRecord === null) {
         this.firstReusedRecord = record;
       }
       return record;
@@ -359,25 +358,25 @@ export class FirstMergeRecorder {
     let merges: GlyphMerge[];
     if (Constants.ROBUST) {
       for (const glyph of this.merge.getGlyphs()) {
-        q.add(new GlyphMerge(this._from!, glyph));
+        q.add(new GlyphMerge(this._from, glyph));
       }
       this.merge.getGlyphs().clear();
     } else {
-      while ((merges = this.merge.pop(this)) !== null) {
+      while ((merges = this.merge.pop(this._from)) !== null) {
         for (const merge of merges) {
           if (LOGGER !== null) {
             LOGGER.log(Level.FINE, `recorded ${merge}`);
           }
-          this._from!.record(merge);
+          this._from.__recordG(merge);
         }
       }
-      this._from!.popMergeInto(q, l);
+      this._from.popMergeInto(q, l);
     }
     FirstMergeRecorder.firstReusedRecord = null; // we can reuse all records again
   }
 
   collector(): (glyphs: Glyph[]) => FirstMerge {
-    if (FirstMergeRecorder.collector == null) {
+    if (FirstMergeRecorder.collector === undefined) {
       FirstMergeRecorder.collector = (glyphs: Glyph[]) => {
         return glyphs.reduce<FirstMerge>(
           (m, g) => {
@@ -493,7 +492,7 @@ export class FirstMergeRecorder {
    * @param glyphs Set of glyphs to record.
    */
   public __recordArrayList(glyphs: ArrayList<Glyph>) {
-    if (glyphs != null) {
+    if (glyphs !== null) {
       this.__recordStream(glyphs.stream());
     }
   }
@@ -507,24 +506,16 @@ export class FirstMergeRecorder {
    * @param glyphs Stream of glyphs to record.
    */
   public __recordStream(glyphs: Stream<Glyph>) {
+    const stream = glyphs.filter((glyph) => glyph.isAlive() && glyph != this._from);
     if (Constants.ROBUST) {
-      this.merge.getGlyphs().addAll(
-        glyphs
-          .parallel()
-          .filter((glyph) => glyph.isAlive() && glyph !== this._from)
-          .collect(Collectors.toSet())
-      );
+      this.merge.getGlyphs().addAll(stream.collect(Collectors.toSet()));
     } else {
-      this.merge.combine(
-        glyphs
-          .filter((glyph) => glyph.isAlive() && glyph !== this._from)
-          .collect(this.collector())
-      );
+      this.merge.combine(stream.collect(this.collector()));
     }
   }
 
   recordAllPairs(cell: QuadTree, q: MultiQueue): void {
-    const glyphs = cell.getGlyphs()!.toArray();
+    const glyphs = cell.getGlyphs().toArray();
     for (let i = 0; i < glyphs.length; ++i) {
       // add events for when two glyphs in the same cell touch
       this.from(glyphs[i]);

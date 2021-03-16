@@ -1,12 +1,13 @@
-import { Level, Logger } from '../java/Logger';
-import { Constants } from '../utils/Constants';
-import { File } from '../java/File';
-import { QuadTree } from '../datastructure/QuadTree';
-import { Timers, Utils } from '../utils/Utils';
-import { HashMap } from '../java/HashMap';
-import { Glyph } from '../datastructure/Glyph';
-import { Scanner } from '../java/Scanner';
-import { LatLng } from '../datastructure/LatLng';
+import {Level, Logger} from "../java/Logger";
+import {Constants} from "../utils/Constants";
+import {File} from "../java/File";
+import {QuadTree} from "../datastructure/QuadTree";
+import {Timers, Utils} from "../utils/Utils";
+import {HashMap} from "../java/HashMap";
+import {Glyph} from "../datastructure/Glyph";
+import {Scanner} from "../java/Scanner";
+import {LatLng} from "../datastructure/LatLng";
+import {ArrayList} from "../java/ArrayList";
 
 export class CsvIO {
   private static readonly LOGGER: Logger = Constants.LOGGING_ENABLED
@@ -15,10 +16,10 @@ export class CsvIO {
 
   public static async read(file: File, tree: QuadTree) {
     if (Constants.LOGGING_ENABLED) {
-      CsvIO.LOGGER.log(Level.FINE, 'ENTRY into CsvIO#read()');
+      CsvIO.LOGGER.log(Level.FINE, "ENTRY into CsvIO#read()");
     }
     if (Constants.TIMERS_ENABLED) {
-      Timers.start('reading file');
+      Timers.start("reading file");
     }
 
     const ignoredRead = [0, 0];
@@ -29,11 +30,11 @@ export class CsvIO {
         return -1;
       }
       const titleLine = await reader.nextLine();
-      const splitOn = titleLine.indexOf('\t') > 0 ? '\t' : '\\s*,\\s*';
+      const splitOn = titleLine.indexOf("\t") > 0 ? "\t" : "\\s*,\\s*";
       const titleCols = titleLine.split(splitOn);
-      const latInd = Utils.indexOf(titleCols, 'latitude');
-      const lngInd = Utils.indexOf(titleCols, 'longitude');
-      const nInd = Utils.indexOf(titleCols, 'n');
+      const latInd = Utils.indexOf(titleCols, "latitude");
+      const lngInd = Utils.indexOf(titleCols, "longitude");
+      const nInd = Utils.indexOf(titleCols, "n");
       if (latInd < 0 || lngInd < 0) {
         throw new Error("need columns 'latitude' and 'longitude' in data");
       }
@@ -45,8 +46,8 @@ export class CsvIO {
         // skip missing and null coordinates
         if (
           cols.length <= Math.max(latInd, lngInd) ||
-          cols[latInd].trim() === '' ||
-          cols[lngInd].trim() === ''
+          cols[latInd].trim() === "" ||
+          cols[lngInd].trim() === ""
         ) {
           ignoredRead[0]++;
           continue;
@@ -74,7 +75,9 @@ export class CsvIO {
         }
       }
       // insert data into tree
-      for (const [ll, weight] of read.values()) {
+      const latlngs = ArrayList.__new([...read.values()]).sort(([a], [b]) => a.compareTo(b));
+      // insert data into tree
+      for (const [ll, weight] of latlngs) {
         // QuadTree is built on zoom level 1, but centered around [0, 0]
         const p = ll.toPoint(1);
         tree.insertCenterOf(
@@ -88,7 +91,7 @@ export class CsvIO {
       console.error(e);
     }
     if (Constants.TIMERS_ENABLED) {
-      Timers.log('reading file', CsvIO.LOGGER);
+      Timers.log("reading file", CsvIO.LOGGER);
     }
     if (Constants.LOGGING_ENABLED) {
       CsvIO.LOGGER.log(
@@ -97,7 +100,7 @@ export class CsvIO {
       );
     }
     if (Constants.LOGGING_ENABLED)
-      CsvIO.LOGGER.log(Level.FINE, 'RETURN from CsvIO#read()');
+      CsvIO.LOGGER.log(Level.FINE, "RETURN from CsvIO#read()");
     return ignoredRead[1];
   }
 }

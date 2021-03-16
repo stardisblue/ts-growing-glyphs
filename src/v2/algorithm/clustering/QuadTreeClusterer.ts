@@ -777,7 +777,9 @@ export class QuadTreeClusterer {
     const uniqueValues = new Set<QuadTree>();
     for (const quadTree of s.orphanedCells) {
       const nonOrphanAncestor = quadTree.getNonOrphanAncestor();
-      if (uniqueValues.add(nonOrphanAncestor)) {
+      const wasInSet = !uniqueValues.has(nonOrphanAncestor)
+      uniqueValues.add(nonOrphanAncestor) // reproducing hashset
+      if (wasInSet) {
         if (Constants.TIMERS_ENABLED)
           Timers.start("record all pairs");
         this.rec.recordAllPairs(nonOrphanAncestor.getNonOrphanAncestor(), q);
