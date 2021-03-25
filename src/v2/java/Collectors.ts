@@ -1,4 +1,5 @@
 import { ArrayList } from './ArrayList';
+import {HashSet} from "./HashSet";
 
 export class Collectors {
   /**
@@ -17,9 +18,9 @@ export class Collectors {
     };
   }
 
-  static toSet() {
-    return function <T>(items: T[]) {
-      return Array.from(new Set(items));
+  static toSet(){
+    return function <T>(items: T[]): T[] {
+      return Array.from<T>(new HashSet<T>(items));
     };
   }
 }

@@ -68,13 +68,13 @@ export class FirstMerge {
     }
     this.size = 0;
     if (LOGGER !== null) {
-      LOGGER.log(Level.FINER, `constructed an empty FirstMerge #${this}`);
+      LOGGER.log(Level.FINER, `constructed an empty FirstMerge ####`);
     }
   }
 
   public accept(parent: FirstMergeRecorder, candidate: Glyph): void {
     if (LOGGER !== null) {
-      LOGGER.log(Level.FINER, `accepting ${candidate} into #${this}`);
+      LOGGER.log(Level.FINER, `accepting ${candidate} into ####`);
       // LOGGER.log(Level.FINER, "accepting {0} into #{1}",
       //     new Object[]{candidate, hashCode()});
     }
@@ -102,7 +102,7 @@ export class FirstMerge {
     if (LOGGER !== null) {
       LOGGER.log(
         Level.FINER,
-        `#${this} now has glyphs ${this.glyphs.toArray().join(", ")} at [${this.at.toArray().join(", ")}]`
+        `#### now has glyphs ${this.glyphs.toArray().join(", ")} at [${this.at.toArray().join(", ")}]`
       );
       // LOGGER.log(Level.FINER, "#{0} now has glyphs {1} at {2}",
       //     new Object[]{
@@ -155,8 +155,8 @@ export class FirstMerge {
         Utils.swap(result.at, i, that.at, thatInd);
         Utils.swap(result.glyphs, i, that.glyphs, thatInd);
         thatInd++;
-      } else if (false) {
-      // } else if (that.at.get(thatInd) === this.at.get(thisInd) && that.at.get(thatInd) !== Number.POSITIVE_INFINITY) {
+      } else if (Utils.Double.eq(that.at.get(thatInd), this.at.get(thisInd))) {
+        // } else if (that.at.get(thatInd) === this.at.get(thisInd) && that.at.get(thatInd) !== Number.POSITIVE_INFINITY) {
         // because in JAVA it's
         //! } else if (that.at.get(thatInd) == this.at.get(thisInd)) {
         // AND NOT
@@ -177,7 +177,7 @@ export class FirstMerge {
     if (LOGGER !== null) {
       LOGGER.log(
         Level.FINER,
-        `result #### of merging #### and #### has glyphs ${result.glyphs.toArray().join(', ')} at ${result.at} (storing in #${this} now)`
+        `result #### of merging #### and #### has glyphs ${result.glyphs.toArray().join(", ")} at ${result.at} (storing in #### now)`
       ); // LOGGER.log(Level.FINER,
       //     "result #{0} of merging #{3} and #{4} has glyphs {1} at {2} (storing in #{3} now)",
       //     new Object[]{
@@ -303,7 +303,7 @@ export class FirstMergeRecorder {
    * and ready to accept and combine. This method may cache instances and reuse
    * them. {@link #REUSABLE_RECORDS} is used to this end.
    */
-  private static  newInstance():FirstMerge {
+  private static newInstance(): FirstMerge {
     // attempt to use cache
     if (this.REUSABLE_RECORDS.size() > 0 && (this.firstReusedRecord == null ||
       this.REUSABLE_RECORDS.getLast() != this.firstReusedRecord)) {

@@ -16,6 +16,7 @@ import {OutOfCell} from "../../datastructure/events/OutOfCell";
 import {Event} from "../../datastructure/events/Event";
 import {Type} from "../../datastructure/events/Type";
 import {Stat} from "../../utils/Stat";
+import {HashSet} from "../../java/HashSet";
 
 /**
  * Object that is used to easily share state between
@@ -774,12 +775,10 @@ export class QuadTreeClusterer {
       Timers.start("[merge event processing] merge events in joined cells");
     }
     // handle adding merge events in joined cells
-    const uniqueValues = new Set<QuadTree>();
+    const uniqueValues = new HashSet<QuadTree>();
     for (const quadTree of s.orphanedCells) {
       const nonOrphanAncestor = quadTree.getNonOrphanAncestor();
-      const wasInSet = !uniqueValues.has(nonOrphanAncestor)
-      uniqueValues.add(nonOrphanAncestor) // reproducing hashset
-      if (wasInSet) {
+      if (uniqueValues.add(nonOrphanAncestor)) {
         if (Constants.TIMERS_ENABLED)
           Timers.start("record all pairs");
         this.rec.recordAllPairs(nonOrphanAncestor.getNonOrphanAncestor(), q);
