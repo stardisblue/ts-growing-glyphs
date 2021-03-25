@@ -23,8 +23,12 @@ export class Timer {
    * Returns a timestamp that can be used to measure elapsed time.
    */
   static now(): number {
-    const [seconds, nano] = process.hrtime();
-    return seconds * 10e9 + nano;
+    if(typeof process === "object") {
+      const [seconds, nano] = process.hrtime();
+      return seconds * 10e9 + nano;
+    }
+    else return performance.now()
+
   }
 
   /**

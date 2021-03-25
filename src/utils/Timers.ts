@@ -116,14 +116,14 @@ export class Timers {
     }
   }
 
-  /**
-   * Returns a timestamp that can be used to measure elapsed time.
-   * @deprecated use Timer.now
-   */
-  static now(): number {
-    const [seconds, nano] = process.hrtime();
-    return seconds * 10e9 + nano;
-  }
+  // /**
+  //  * Returns a timestamp that can be used to measure elapsed time.
+  //  * @deprecated use Timer.now
+  //  */
+  // static now(): number {
+  //   const [seconds, nano] = process.hrtime();
+  //   return seconds * 10e9 + nano;
+  // }
 
   /**
    * Start a new timer with the given name. Overwrites any existing timer

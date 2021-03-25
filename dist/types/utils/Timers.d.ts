@@ -47,11 +47,6 @@ export declare class Timers {
      */
     static logAll(logger: Logger): void;
     /**
-     * Returns a timestamp that can be used to measure elapsed time.
-     * @deprecated use Timer.now
-     */
-    static now(): number;
-    /**
      * Start a new timer with the given name. Overwrites any existing timer
      * with the same name, so can be used to restart timers too.
      *

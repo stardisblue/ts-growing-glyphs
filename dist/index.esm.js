@@ -3730,12 +3730,14 @@ var Timer = /*#__PURE__*/function () {
   }], [{
     key: "now",
     value: function now() {
-      var _process$hrtime = process.hrtime(),
-          _process$hrtime2 = _slicedToArray(_process$hrtime, 2),
-          seconds = _process$hrtime2[0],
-          nano = _process$hrtime2[1];
+      if ((typeof process === "undefined" ? "undefined" : _typeof(process)) === "object") {
+        var _process$hrtime = process.hrtime(),
+            _process$hrtime2 = _slicedToArray(_process$hrtime, 2),
+            seconds = _process$hrtime2[0],
+            nano = _process$hrtime2[1];
 
-      return seconds * 10e9 + nano;
+        return seconds * 10e9 + nano;
+      } else return performance.now();
     }
   }, {
     key: "in",
@@ -3943,22 +3945,15 @@ var Timers = /*#__PURE__*/function () {
       } finally {
         _iterator5.f();
       }
-    }
-    /**
-     * Returns a timestamp that can be used to measure elapsed time.
-     * @deprecated use Timer.now
-     */
+    } // /**
+    //  * Returns a timestamp that can be used to measure elapsed time.
+    //  * @deprecated use Timer.now
+    //  */
+    // static now(): number {
+    //   const [seconds, nano] = process.hrtime();
+    //   return seconds * 10e9 + nano;
+    // }
 
-  }, {
-    key: "now",
-    value: function now() {
-      var _process$hrtime = process.hrtime(),
-          _process$hrtime2 = _slicedToArray(_process$hrtime, 2),
-          seconds = _process$hrtime2[0],
-          nano = _process$hrtime2[1];
-
-      return seconds * 10e9 + nano;
-    }
     /**
      * Start a new timer with the given name. Overwrites any existing timer
      * with the same name, so can be used to restart timers too.
