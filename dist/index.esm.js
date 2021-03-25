@@ -421,9 +421,9 @@ var Collectors = /*#__PURE__*/function () {
 
 var _Symbol$iterator$1;
 
-function _createSuper$7(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct$8(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+function _createSuper$8(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct$9(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
 
-function _isNativeReflectConstruct$8() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+function _isNativeReflectConstruct$9() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
 _Symbol$iterator$1 = Symbol.iterator;
 var ArrayList = /*#__PURE__*/function () {
   function ArrayList(size) {
@@ -706,7 +706,7 @@ var Stream = /*#__PURE__*/function () {
 var NumberStream = /*#__PURE__*/function (_Stream) {
   _inherits(NumberStream, _Stream);
 
-  var _super = _createSuper$7(NumberStream);
+  var _super = _createSuper$8(NumberStream);
 
   function NumberStream() {
     _classCallCheck(this, NumberStream);
@@ -1141,13 +1141,13 @@ var Units;
   Units[Units["SECONDS"] = 1000000000] = "SECONDS";
 })(Units || (Units = {}));
 
-function _createSuper$6(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct$7(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+function _createSuper$7(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct$8(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
 
-function _isNativeReflectConstruct$7() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+function _isNativeReflectConstruct$8() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
 var Shape = /*#__PURE__*/function (_Rectangle2D) {
   _inherits(Shape, _Rectangle2D);
 
-  var _super = _createSuper$6(Shape);
+  var _super = _createSuper$7(Shape);
 
   function Shape() {
     _classCallCheck(this, Shape);
@@ -1401,6 +1401,102 @@ var GrowFunction = /*#__PURE__*/function () {
 
   return GrowFunction;
 }();
+
+function _createSuper$6(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct$7(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+
+function _isNativeReflectConstruct$7() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+var UncertainQueue = /*#__PURE__*/function (_PriorityQueue) {
+  _inherits(UncertainQueue, _PriorityQueue);
+
+  var _super = _createSuper$6(UncertainQueue);
+
+  function UncertainQueue() {
+    var _this;
+
+    _classCallCheck(this, UncertainQueue);
+
+    _this = _super.call(this);
+
+    _defineProperty(_assertThisInitialized(_this), "\u03B1", void 0);
+
+    _this.α = 1;
+    return _this;
+  }
+
+  _createClass(UncertainQueue, [{
+    key: "add",
+    value: function add(merge) {
+      var t = merge.computeAt();
+      merge.setLowerBound(t / this.α);
+      return _get(_getPrototypeOf(UncertainQueue.prototype), "add", this).call(this, merge);
+    }
+  }, {
+    key: "peek",
+    value: function peek() {
+      while (!this.isEmpty()) {
+        var merge = _get(_getPrototypeOf(UncertainQueue.prototype), "peek", this).call(this);
+
+        var wth = merge.getSmallGlyph();
+
+        if (!wth.isAlive()) {
+          _get(_getPrototypeOf(UncertainQueue.prototype), "poll", this).call(this);
+
+          continue; // try the next event
+        } // check if event is the first
+
+
+        var t = merge.computeAt();
+        var τ = merge.getLowerBound();
+
+        if (Utils.Double.eq(t, this.α * τ)) {
+          return merge;
+        } // if not, update its key and reinsert
+
+
+        _get(_getPrototypeOf(UncertainQueue.prototype), "poll", this).call(this);
+
+        merge.setLowerBound(t / this.α);
+
+        _get(_getPrototypeOf(UncertainQueue.prototype), "add", this).call(this, merge);
+      }
+
+      return null;
+    }
+  }, {
+    key: "poll",
+    value: function poll() {
+      // ensure that the actual first event is the head of the queue
+      if (this.peek() == null) {
+        return null;
+      } // return it if there is one
+
+
+      return _get(_getPrototypeOf(UncertainQueue.prototype), "poll", this).call(this);
+    }
+    /**
+     * Update α to maintain the invariant.
+     *
+     * @param event Event that caused need for updating α.
+     */
+
+  }, {
+    key: "updateAlpha",
+    value: function updateAlpha(event) {
+      var bigRadius = GrowFunction.radius(event.getGlyphs()[0], event.getAt());
+      var smallRadius = GrowFunction.radius(event.getGlyphs()[1], event.getAt());
+
+      if (bigRadius < smallRadius) {
+        var tmp = smallRadius;
+        smallRadius = bigRadius;
+        bigRadius = tmp;
+      }
+
+      this.α = (bigRadius - smallRadius) / (bigRadius + smallRadius) * this.α;
+    }
+  }]);
+
+  return UncertainQueue;
+}(PriorityQueue);
 
 var Type = /*#__PURE__*/function () {
   function Type(name, priority) {
@@ -2023,6 +2119,7 @@ var Logger = /*#__PURE__*/function () {
   }], [{
     key: "getLogger",
     value: function getLogger(name) {
+      if (!Constants.LOGGING_ENABLED) return null;
 
       if (_loggers.has(name)) {
         return _loggers.get(name);
@@ -2705,8 +2802,10 @@ var Glyph = /*#__PURE__*/function () {
 
       this.track = false;
 
-      {
+      if (Constants.TRACK && !Constants.ROBUST) {
         this.trackedBy = new ArrayList();
+      } else {
+        this.trackedBy = null;
       }
 
       this.x = x;
@@ -2992,7 +3091,7 @@ var Glyph = /*#__PURE__*/function () {
 
         q.add(merge);
 
-        {
+        if (Constants.TRACK && !Constants.ROBUST) {
           if (!wth.trackedBy.contains(this)) {
             wth.trackedBy.add(this);
           }
@@ -3025,6 +3124,8 @@ var Glyph = /*#__PURE__*/function () {
         throw new Error("big glyphs don't pop out of cell events into the shared queue");
       }
 
+      var added = false;
+
       while (!this.outOfCellEvents.isEmpty()) {
         var o = this.outOfCellEvents.poll();
 
@@ -3033,10 +3134,15 @@ var Glyph = /*#__PURE__*/function () {
         }
 
         q.add(o);
+        added = true;
 
-        {
+        if (!Constants.ROBUST) {
           return true;
         }
+      }
+
+      if (Constants.ROBUST && added) {
+        return true;
       }
 
       if (l != null) {
@@ -3118,8 +3224,15 @@ var Glyph = /*#__PURE__*/function () {
   }, {
     key: "setBig",
     value: function setBig(glyphSize) {
-      {
+      if (!Constants.BIG_GLYPHS) {
         return;
+      }
+
+      this.big = this.n > glyphSize.getAverage() * Constants.BIG_GLYPH_FACTOR;
+      Stats.count('glyph was big when it participated', this.big); // if the glyph is big, initialize uncertain merge event tracking
+
+      if (this.big) {
+        this.uncertainMergeEvents = new UncertainQueue();
       }
     }
     /**
@@ -5299,7 +5412,7 @@ function getLogger() {
   var _l;
 
   var l;
-  return (_l = l = Logger.getLogger("FirstMergeRecorder")) !== null && _l !== void 0 && _l.isLoggable(Level.FINER) ? l : null;
+  return Constants.LOGGING_ENABLED && (_l = l = Logger.getLogger("FirstMergeRecorder")) !== null && _l !== void 0 && _l.isLoggable(Level.FINER) ? l : null;
 }
 /**
  * The logger of this class, that is instantiated only when logging is
@@ -5578,7 +5691,23 @@ var FirstMergeRecorder = /*#__PURE__*/function () {
       var l = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
       var merges;
 
-      {
+      if (Constants.ROBUST) {
+        var _iterator2 = _createForOfIteratorHelper$1(this.merge.getGlyphs()),
+            _step2;
+
+        try {
+          for (_iterator2.s(); !(_step2 = _iterator2.n()).done;) {
+            var glyph = _step2.value;
+            q.add(new GlyphMerge(this._from, glyph));
+          }
+        } catch (err) {
+          _iterator2.e(err);
+        } finally {
+          _iterator2.f();
+        }
+
+        this.merge.getGlyphs().clear();
+      } else {
         while ((merges = this.merge.pop(this._from)) !== null) {
           var _iterator3 = _createForOfIteratorHelper$1(merges),
               _step3;
@@ -5734,7 +5863,9 @@ var FirstMergeRecorder = /*#__PURE__*/function () {
         return glyph.isAlive() && glyph != _this2._from;
       });
 
-      {
+      if (Constants.ROBUST) {
+        this.merge.getGlyphs().addAll(stream.collect(Collectors.toSet()));
+      } else {
         this.merge.combine(stream.collect(this.collector()));
       }
     }
@@ -6057,7 +6188,7 @@ function GlobalState(map) {
   this.map = map;
 };
 
-var LOGGER = Logger.getLogger("QuadTreeClusterer") ;
+var LOGGER = Constants.LOGGING_ENABLED ? Logger.getLogger("QuadTreeClusterer") : null;
 var QuadTreeClusterer = /*#__PURE__*/function () {
   /**
    * Tree with {@link Glyph glyphs} that need clustering.
@@ -6092,7 +6223,7 @@ var QuadTreeClusterer = /*#__PURE__*/function () {
 
       if (LOGGER != null) {
         LOGGER.log(Level.FINER, "ENTRY into AgglomerativeClustering#cluster()");
-        LOGGER.log(Level.FINE, "clustering using ".concat(Utils.join(" + ", "", "TRACK" , "", "NO BUCKETING"), " strategy")); // LOGGER.log(Level.FINE, "clustering using {0} strategy", Utils.join(" + ",
+        LOGGER.log(Level.FINE, "clustering using ".concat(Utils.join(" + ", Constants.ROBUST ? "ROBUST" : "", Constants.TRACK && !Constants.ROBUST ? "TRACK" : "", !Constants.ROBUST && !Constants.TRACK ? "FIRST MERGE ONLY" : "", "NO BUCKETING"), " strategy")); // LOGGER.log(Level.FINE, "clustering using {0} strategy", Utils.join(" + ",
         //     (Constants.ROBUST ? "ROBUST" : ""),
         //     (Constants.TRACK && !Constants.ROBUST ? "TRACK" : ""),
         //     (!Constants.ROBUST && !Constants.TRACK ? "FIRST MERGE ONLY" : ""),
@@ -6139,7 +6270,7 @@ var QuadTreeClusterer = /*#__PURE__*/function () {
         }
       }
 
-      {
+      if (Constants.TIMERS_ENABLED) {
         Timers.start("clustering");
       } // construct a queue, put everything in there - 10x number of glyphs
       // appears to be a good estimate for needed capacity without bucketing
@@ -6335,9 +6466,9 @@ var QuadTreeClusterer = /*#__PURE__*/function () {
 
           case Type.OUT_OF_CELL:
             {
-              Timers.start("out of cell event processing");
+              if (Constants.TIMERS_ENABLED) Timers.start("out of cell event processing");
               this.handleOutOfCell(e, map, false, q);
-              Timers.stop("out of cell event processing");
+              if (Constants.TIMERS_ENABLED) Timers.stop("out of cell event processing");
             }
         }
 
@@ -6388,7 +6519,7 @@ var QuadTreeClusterer = /*#__PURE__*/function () {
         Stats.logAll(LOGGER);
       }
 
-      Timers.logAll(LOGGER);
+      if (Constants.TIMERS_ENABLED) Timers.logAll(LOGGER);
       if (LOGGER != null) LOGGER.log(Level.FINER, "RETURN from AgglomerativeClustering#cluster()");
       return this;
     }
@@ -6485,7 +6616,7 @@ var QuadTreeClusterer = /*#__PURE__*/function () {
   }, {
     key: "handleBigGlyphMerge",
     value: function handleBigGlyphMerge(m, s, q, track) {
-      {
+      if (Constants.TIMERS_ENABLED) {
         Timers.start("[merge event processing] big");
       } // process the merge and all merges that it causes
 
@@ -6539,7 +6670,7 @@ var QuadTreeClusterer = /*#__PURE__*/function () {
 
       this.recordGlyphAndStats(merged, s, track);
 
-      {
+      if (Constants.TIMERS_ENABLED) {
         Timers.stop("[merge event processing] big");
       }
     }
@@ -6814,7 +6945,7 @@ var QuadTreeClusterer = /*#__PURE__*/function () {
   }, {
     key: "processNestedMerges",
     value: function processNestedMerges(m, s, q, track) {
-      {
+      if (Constants.TIMERS_ENABLED) {
         Timers.start("[merge event processing] total");
 
         if (track) {
@@ -6830,7 +6961,7 @@ var QuadTreeClusterer = /*#__PURE__*/function () {
       var mergedHC = null;
       var mergedAt = m.getAt();
 
-      {
+      if (Constants.TIMERS_ENABLED) {
         Timers.start("[merge event processing] nested merges");
       }
 
@@ -6952,7 +7083,7 @@ var QuadTreeClusterer = /*#__PURE__*/function () {
         }
       } while (this.findOverlap(merged, mergedAt, s.nestedMerges, s.bigGlyphs));
 
-      {
+      if (Constants.TIMERS_ENABLED) {
         Timers.stop("[merge event processing] nested merges");
         Timers.start("[merge event processing] merge events in joined cells");
       } // handle adding merge events in joined cells
@@ -6982,13 +7113,13 @@ var QuadTreeClusterer = /*#__PURE__*/function () {
 
       s.orphanedCells.clear();
 
-      {
+      if (Constants.TIMERS_ENABLED) {
         Timers.stop("[merge event processing] merge events in joined cells");
         Timers.start("[merge event processing] tracker updating");
       } // update merge events of glyphs that tracked merged glyphs
 
 
-      {
+      if (Constants.TRACK && !Constants.ROBUST) {
         var _iterator28 = _createForOfIteratorHelper(s.trackersNeedingUpdate),
             _step28;
 
@@ -7032,7 +7163,7 @@ var QuadTreeClusterer = /*#__PURE__*/function () {
         s.trackersNeedingUpdate.clear();
       }
 
-      {
+      if (Constants.TIMERS_ENABLED) {
         Timers.stop("[merge event processing] tracker updating");
         Timers.start("[merge event processing] merged glyph insert");
       } // add new glyph to QuadTree cell(s)
@@ -7048,7 +7179,7 @@ var QuadTreeClusterer = /*#__PURE__*/function () {
         }
       }
 
-      {
+      if (Constants.TIMERS_ENABLED) {
         Timers.stop("[merge event processing] merged glyph insert");
       } // eventually, the last merged glyph is the root
 
@@ -7073,7 +7204,7 @@ var QuadTreeClusterer = /*#__PURE__*/function () {
         Stats.record("number of big glyphs", s.bigGlyphs.size());
       }
 
-      {
+      if (Constants.TIMERS_ENABLED) {
         Timers.stop("[merge event processing] total");
 
         if (track) {
@@ -7090,7 +7221,7 @@ var QuadTreeClusterer = /*#__PURE__*/function () {
   }, {
     key: "recordEventsForGlyph",
     value: function recordEventsForGlyph(merged, at, q) {
-      Timers.start("[merge event processing] merge event recording"); // create events with remaining glyphs
+      if (Constants.TIMERS_ENABLED) Timers.start("[merge event processing] merge event recording"); // create events with remaining glyphs
       // (we always have to loop over cells here, `merged` has just
       //  been created and thus hasn't recorded merge events yet)
 
@@ -7167,7 +7298,7 @@ var QuadTreeClusterer = /*#__PURE__*/function () {
 
       merged.popOutOfCellInto(q, LOGGER);
       this.rec.addEventsTo(q, LOGGER);
-      Timers.stop("[merge event processing] merge event recording");
+      if (Constants.TIMERS_ENABLED) Timers.stop("[merge event processing] merge event recording");
     }
     /**
      * Executed right before going to the next iteration of the event handling
@@ -7177,6 +7308,11 @@ var QuadTreeClusterer = /*#__PURE__*/function () {
   }, {
     key: "step",
     value: function step() {
+      if (Constants.STATS_ENABLED) {
+        Stats.record("QuadTree cells", Utils.size(this.tree.iterator()));
+        Stats.record("QuadTree leaves", this.tree.__getLeaves().size());
+        Stats.record("QuadTree height", this.tree.getTreeHeight());
+      }
     }
     /**
      * Returns the latest result of executing the clustering algorithm. Initially
@@ -7280,4 +7416,4 @@ var QuadTreeClusterer = /*#__PURE__*/function () {
   return QuadTreeClusterer;
 }();
 
-export { QuadTree, QuadTreeClusterer };
+export { Constants, QuadTree, QuadTreeClusterer };
