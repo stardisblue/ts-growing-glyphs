@@ -43,7 +43,7 @@ export default [
   // `file` and `format` for each target)
   {
     input: 'src/index.ts',
-    external: ['collections/list', 'lodash', 'tinyqueue'],
+    external: ['collections/list', 'tinyqueue'],
     plugins: [
       resolve({extensions}), // so Rollup can find `ms`
       commonjs(), // so Rollup can convert `ms` to an ES module

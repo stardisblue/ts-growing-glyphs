@@ -1,6 +1,6 @@
 {
   "name": "ts-growing-glyphs",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "main": "dist/index.cjs.js",
   "module": "dist/index.esm.js",
   "iife": "dist/ts-growing-glyphs.iife.min.js",
@@ -27,7 +27,6 @@
   "dependencies": {
     "@types/collections": "^5.1.0",
     "collections": "^5.1.12",
-    "lodash": "^4.17.21",
     "tinyqueue": "^2.0.3"
   },
   "scripts": {
