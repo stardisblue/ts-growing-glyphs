@@ -1,0 +1,1 @@
+{"version":3,"file":"Scanner.d.ts","sourceRoot":"","sources":["../../../src/java/Scanner.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,IAAI,EAAE,MAAM,QAAQ,CAAC;AAI9B,qBAAa,OAAO;IAClB,OAAO,CAAC,IAAI,CAAO;IACnB,OAAO,CAAC,IAAI,CAAgC;IAC5C,OAAO,CAAC,MAAM,CAA8B;IAC5C,QAAQ,EAAE,OAAO,CAAS;gBAEd,IAAI,EAAE,IAAI;IAQhB,WAAW;IAQX,QAAQ;CAQf"}

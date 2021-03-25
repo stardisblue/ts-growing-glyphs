@@ -1,0 +1,1 @@
+{"version":3,"file":"CsvIO.d.ts","sourceRoot":"","sources":["../../../src/io/CsvIO.ts"],"names":[],"mappings":"AAEA,OAAO,EAAC,IAAI,EAAC,MAAM,cAAc,CAAC;AAClC,OAAO,EAAC,QAAQ,EAAC,MAAM,2BAA2B,CAAC;AASnD,qBAAa,KAAK;IAChB,OAAO,CAAC,MAAM,CAAC,QAAQ,CAAC,MAAM,CAErB;WAEW,IAAI,CAAC,IAAI,EAAE,IAAI,EAAE,IAAI,EAAE,QAAQ;CAyFpD"}
