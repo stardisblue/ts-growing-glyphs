@@ -4,7 +4,7 @@ import {System} from "../java/System";
 import {PrintStream} from "../java/PrintStream";
 import {ConfigurableConsoleHandler} from "../java/ConfigurableConsoleHandler";
 import {QuadTree} from "../datastructure/QuadTree";
-import {QuadTreeClusterer} from "../algorithm/clustering/QuadTreeClusterer";
+import {QuadTreeClusterer} from "../algorithm/QuadTreeClusterer";
 import {Stats, Timers} from "../utils/Utils";
 import {File} from "../java/File";
 import {CsvIO} from "../io/CsvIO";

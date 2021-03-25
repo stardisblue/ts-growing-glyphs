@@ -56,7 +56,7 @@ export class QuadTree implements Iterable<QuadTree> {
    * @param h Height of cell.
    */
   constructor(x: number, y: number, w: number, h: number) {
-    this.cell = new Rectangle2D.Double(x, y, w, h);
+    this.cell = new Rectangle2D(x, y, w, h);
     this.parent = null;
     this._isOrphan = false;
     this.children = null;
@@ -339,8 +339,9 @@ export class QuadTree implements Iterable<QuadTree> {
     return this.parent!.getRoot();
   }
 
+  // @ts-ignore
   getSide(side: Side) {
-    return new Rectangle2D.Double(
+    return new Rectangle2D(
       this.cell.getX() + (side === Side.RIGHT ? this.cell.getWidth() : 0),
       this.cell.getY() + (side === Side.BOTTOM ? this.cell.getHeight() : 0),
       side == Side.TOP || side === Side.BOTTOM ? this.cell.getWidth() : 0,

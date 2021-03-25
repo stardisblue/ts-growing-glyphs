@@ -1,22 +1,22 @@
-import {QuadTree} from "../../datastructure/QuadTree";
-import {Constants} from "../../utils/Constants";
-import {Level, Logger} from "../../java/Logger";
-import {Glyph} from "../../datastructure/Glyph";
-import {PriorityQueue} from "../../java/PriorityQueue";
-import {GlyphMerge} from "../../datastructure/events/GlyphMerge";
-import {ArrayList} from "../../java/ArrayList";
-import {GrowFunction} from "../../datastructure/growfunction/GrowFunction";
-import {HierarchicalClustering} from "../../datastructure/HierarchicalClustering";
-import {FirstMergeRecorder} from "../FirstMergeRecorder";
-import {Stats, Timers, Utils} from "../../utils/Utils";
-import {MultiQueue} from "../../datastructure/queues/MultiQueue";
-import {HashMap} from "../../java/HashMap";
-import {Side} from "../../datastructure/events/Side";
-import {OutOfCell} from "../../datastructure/events/OutOfCell";
-import {Event} from "../../datastructure/events/Event";
-import {Type} from "../../datastructure/events/Type";
-import {Stat} from "../../utils/Stat";
-import {HashSet} from "../../java/HashSet";
+import {QuadTree} from "../datastructure/QuadTree";
+import {Constants} from "../utils/Constants";
+import {Level, Logger} from "../java/Logger";
+import {Glyph} from "../datastructure/Glyph";
+import {PriorityQueue} from "../java/PriorityQueue";
+import {GlyphMerge} from "../datastructure/events/GlyphMerge";
+import {ArrayList} from "../java/ArrayList";
+import {GrowFunction} from "../datastructure/growfunction/GrowFunction";
+import {HierarchicalClustering} from "../datastructure/HierarchicalClustering";
+import {FirstMergeRecorder} from "./FirstMergeRecorder";
+import {Stats, Timers, Utils} from "../utils/Utils";
+import {MultiQueue} from "../datastructure/queues/MultiQueue";
+import {HashMap} from "../java/HashMap";
+import {Side} from "../datastructure/events/Side";
+import {OutOfCell} from "../datastructure/events/OutOfCell";
+import {Event} from "../datastructure/events/Event";
+import {Type} from "../datastructure/events/Type";
+import {Stat} from "../utils/Stat";
+import {HashSet} from "../java/HashSet";
 
 /**
  * Object that is used to easily share state between

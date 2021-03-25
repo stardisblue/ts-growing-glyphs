@@ -5,8 +5,6 @@ import {Side} from "../events/Side";
 import {Utils} from "../../utils/Utils";
 
 export class Shape extends Rectangle2D {
-  static Double = class Double extends Shape {
-  };
 
   getBounds2D(): Rectangle2D {
     return this;
@@ -206,7 +204,7 @@ export class GrowFunction {
 
   static sizeAt(g: Glyph, at: number): Shape {
     const r = this.radius(g, at);
-    return new Shape.Double(g.getX() - r, g.getY() - r, 2 * r, 2 * r);
+    return new Shape(g.getX() - r, g.getY() - r, 2 * r, 2 * r);
   }
 
   /**

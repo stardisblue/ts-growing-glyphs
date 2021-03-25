@@ -15,7 +15,6 @@ export class Rectangle2D {
     this.height = h;
   }
 
-  static Double = class Double extends Rectangle2D {};
 
   /**
    * @deprecated use #x
