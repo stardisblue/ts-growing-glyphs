@@ -1,23 +1,38 @@
 {
   "name": "ts-gg",
   "version": "1.0.0",
-  "main": "dist/index.js",
+  "main": "dist/index.cjs.js",
+  "module": "dist/index.esm.js",
+  "iife": "dist/ts-growing-glyphs.iife.min.js",
+  "browser": "dist/ts-growing-glyphs.min.js",
+  "types": "dist/types/index.d.ts",
   "license": "MIT",
   "devDependencies": {
     "@types/node": "^14.14.32",
-    "typescript": "^4.2.3"
+    "typescript": "^4.2.3",
+    "@babel/core": "^7.13.10",
+    "@babel/plugin-proposal-class-properties": "^7.13.0",
+    "@babel/plugin-proposal-object-rest-spread": "^7.13.8",
+    "@babel/plugin-transform-runtime": "^7.13.10",
+    "@babel/preset-env": "^7.13.12",
+    "@babel/preset-typescript": "^7.13.0",
+    "@rollup/plugin-babel": "^5.3.0",
+    "@rollup/plugin-commonjs": "^17.1.0",
+    "@rollup/plugin-node-resolve": "^11.2.0",
+    "rollup": "^2.42.4",
+    "rollup-plugin-terser": "^7.0.2",
+    "ts-node": "^9.1.1"
+
   },
   "dependencies": {
     "@types/collections": "^5.1.0",
-    "@types/leaflet": "^1.5.23",
     "collections": "^5.1.12",
-    "leaflet": "^1.7.1",
     "lodash": "^4.17.21",
-    "nodemon": "^2.0.7",
-    "tinyqueue": "^2.0.3",
-    "ts-node": "^9.1.1"
+    "tinyqueue": "^2.0.3"
   },
   "scripts": {
-    "dev": "nodemon --inspect=3001 --config nodemon.json src/index.ts data/simple quad n"
+    "build:types": "tsc --emitDeclarationOnly",
+    "build:js": "rollup -c",
+    "build": "yarn build:js && yarn build:types"
   }
 }
