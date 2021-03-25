@@ -1,14 +1,13 @@
-import { Glyph } from '../Glyph';
-import { Type } from './Type';
-import { UncertainGlyphMerge } from './UncertainGlyphMerge';
-import { Event } from './Event';
-import { GrowFunction } from '../growfunction/GrowFunction';
+import {Glyph} from "../Glyph";
+import {Type} from "./Type";
+import {Event} from "./Event";
+import {GrowFunction} from "../growfunction/GrowFunction";
 
 export class GlyphMerge extends Event {
   // constructor(a: Glyph, b: Glyph)
   constructor(a: Glyph, b: Glyph, at?: number) {
     if (at === null || at === undefined) {
-      at = GrowFunction.intersectAt(a, b);
+      at = GrowFunction.__intersectAtGlyphGlyph(a, b);
     }
     super(at, 2);
     this.glyphs[0] = a;
@@ -26,10 +25,11 @@ export class GlyphMerge extends Event {
     return Type.MERGE;
   }
 
-  /**
-   * Returns a new {@link UncertainGlyphMerge} instance built on this event.
-   */
-  public uncertain(): UncertainGlyphMerge {
-    return new UncertainGlyphMerge(this);
-  }
+  // /**
+  //  * Returns a new {@link UncertainGlyphMerge} instance built on this event.
+  //  * @deprecated use new UncertainGlyphMerge
+  //  */
+  // public uncertain(): UncertainGlyphMerge {
+  //   return new UncertainGlyphMerge(this);
+  // }
 }

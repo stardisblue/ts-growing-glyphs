@@ -8,11 +8,13 @@ import {isRectangle2D, Rectangle2D} from "../java/Rectangle2D";
 import {ArrayList} from "../java/ArrayList";
 import {Glyph, isGlyph} from "./Glyph";
 import {isSide, Side} from "./events/Side";
-import {Stats, Timers, Utils} from "../utils/Utils";
+import {Utils} from "../utils/Utils";
 import {Arrays} from "../java/Arrays";
 import {GrowFunction} from "./growfunction/GrowFunction";
 import {LinkedList} from "../java/LinkedList";
 import {ArrayDeque} from "../java/ArrayDeque";
+import {Timers} from "../utils/Timers";
+import {Stats} from "../utils/Stats";
 
 function isArrayList<T>(item: any): item is ArrayList<T> {
   return item instanceof ArrayList;
@@ -504,7 +506,7 @@ export class QuadTree implements Iterable<QuadTree> {
   /**
    * Returns an iterator over all alive glyphs in this QuadTree.
    */
-  public iteratorGlyphsAlive(): Iterator<Glyph> {
+  public iteratorGlyphsAlive():  IterableIterator<Glyph> {
     return this.__getLeaves()
       .stream()
       .flatMap((cell) => cell.getGlyphsAlive()!.toArray())
@@ -638,7 +640,7 @@ export class QuadTree implements Iterable<QuadTree> {
     at: number,
     result: ArrayList<QuadTree>
   ) {
-    if (GrowFunction.intersectAt(glyph, this.cell) > at + Utils.EPS) {
+    if (GrowFunction.__intersectAtGlyphRectangle(glyph, this.cell) > at + Utils.EPS) {
       return;
     }
     if (this.isLeaf()) {

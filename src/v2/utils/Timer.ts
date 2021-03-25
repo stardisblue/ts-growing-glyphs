@@ -1,4 +1,4 @@
-import { Timers, Units } from './Utils';
+import { Units } from './Utils';
 import { Level, Logger } from '../java/Logger';
 import { System } from '../java/System';
 
@@ -20,10 +20,18 @@ export class Timer {
   }
 
   /**
+   * Returns a timestamp that can be used to measure elapsed time.
+   */
+  static now(): number {
+    const [seconds, nano] = process.hrtime();
+    return seconds * 10e9 + nano;
+  }
+
+  /**
    * Returns how much time passed since this timer was last started.
    */
   getElapsed(): number {
-    return Timers.now() - this.started;
+    return Timer.now() - this.started;
   }
 
   /**
@@ -43,6 +51,16 @@ export class Timer {
   }
 
   /**
+   * Returns the given timespan in a given unit.
+   *
+   * @param timeSpan Timespan in nanoseconds.
+   * @param units    Unit to transform into.
+   */
+  static in(timeSpan: number, units: Units): number {
+    return timeSpan / units;
+  }
+
+  /**
    * {@link #stop() Stop} this timer and log the {@link #getElapsedTotal()
    * total elapsed time} to the given logger instance, at level
    * {@link Level#FINE}.
@@ -56,7 +74,7 @@ export class Timer {
     if (logger !== null) {
       logger.log(
         level,
-        `${name} took ${Timers.in(this.totalElapsed, Units.SECONDS)
+        `${name} took ${Timer.in(this.totalElapsed, Units.SECONDS)
           .toFixed(2)
           .padStart(5)} seconds (wall clock time${
           this.count === 1 ? '' : `, ${this.count} timings`
@@ -69,7 +87,7 @@ export class Timer {
       //         NumberFormat.getIntegerInstance().format(count)))});
     } else {
       System.out.println(
-        `${name} took ${Timers.in(this.totalElapsed, Units.SECONDS)
+        `${name} took ${Timer.in(this.totalElapsed, Units.SECONDS)
           .toFixed(3)
           .padStart(5)} seconds (wall clock time${
           this.count === 1 ? '' : `, ${this.count} timings`
@@ -91,7 +109,7 @@ export class Timer {
     if (this.running) {
       return;
     }
-    this.started = Timers.now();
+    this.started = Timer.now();
     this.running = true;
   }
 

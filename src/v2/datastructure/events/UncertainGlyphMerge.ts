@@ -1,4 +1,4 @@
-import { Glyph } from '../Glyph';
+import type { Glyph } from '../Glyph';
 import { UncertainEvent } from './UncertainEvent';
 import { GlyphMerge } from './GlyphMerge';
 import { GrowFunction } from '../growfunction/GrowFunction';
@@ -43,7 +43,7 @@ export class UncertainGlyphMerge extends UncertainEvent {
     }
     // recompute, but only if needed
     if (changed) {
-      this.at = GrowFunction.intersectAt(this.glyphs[0], this.glyphs[1]);
+      this.at = GrowFunction.__intersectAtGlyphGlyph(this.glyphs[0], this.glyphs[1]);
     }
     return this.at;
   }

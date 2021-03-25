@@ -1,6 +1,7 @@
 import { PriorityQueue } from '../../java/PriorityQueue';
 import { Event } from '../events/Event';
-import { Stats, Timers } from '../../utils/Utils';
+import {Timers} from "../../utils/Timers";
+import {Stats} from "../../utils/Stats";
 
 export class MultiQueue extends PriorityQueue<Event> {
   private static readonly INSERTION: number = 0;

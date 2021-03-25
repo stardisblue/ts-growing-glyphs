@@ -2,12 +2,13 @@ import {Level, Logger} from "../java/Logger";
 import {Constants} from "../utils/Constants";
 import {File} from "../java/File";
 import {QuadTree} from "../datastructure/QuadTree";
-import {Timers, Utils} from "../utils/Utils";
+import {Utils} from "../utils/Utils";
 import {HashMap} from "../java/HashMap";
 import {Glyph} from "../datastructure/Glyph";
 import {Scanner} from "../java/Scanner";
 import {LatLng} from "../datastructure/LatLng";
 import {ArrayList} from "../java/ArrayList";
+import {Timers} from "../utils/Timers";
 
 export class CsvIO {
   private static readonly LOGGER: Logger = Constants.LOGGING_ENABLED

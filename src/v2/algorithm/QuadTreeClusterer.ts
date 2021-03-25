@@ -8,7 +8,7 @@ import {ArrayList} from "../java/ArrayList";
 import {GrowFunction} from "../datastructure/growfunction/GrowFunction";
 import {HierarchicalClustering} from "../datastructure/HierarchicalClustering";
 import {FirstMergeRecorder} from "./FirstMergeRecorder";
-import {Stats, Timers, Utils} from "../utils/Utils";
+import {Utils} from "../utils/Utils";
 import {MultiQueue} from "../datastructure/queues/MultiQueue";
 import {HashMap} from "../java/HashMap";
 import {Side} from "../datastructure/events/Side";
@@ -17,6 +17,9 @@ import {Event} from "../datastructure/events/Event";
 import {Type} from "../datastructure/events/Type";
 import {Stat} from "../utils/Stat";
 import {HashSet} from "../java/HashSet";
+import {Timers} from "../utils/Timers";
+import {Stats} from "../utils/Stats";
+import {UncertainGlyphMerge} from "../datastructure/events/UncertainGlyphMerge";
 
 /**
  * Object that is used to easily share state between
@@ -178,7 +181,7 @@ export class QuadTreeClusterer {
     }
     // merge glyphs until no pairs to merge remain
     let e: Event;
-    while ((e = this.getNextEvent(q, state)) !== null) {
+    while ((e = QuadTreeClusterer.getNextEvent(q, state)) !== null) {
       // log on a slightly higher urgency level when one of the glyphs is tracked
       if (LOGGER !== null) {
         if (LOGGER.getLevel() > Level.FINER) {
@@ -338,7 +341,7 @@ export class QuadTreeClusterer {
     let bAt; // before `at`, used to store time/zoom level of found merges
     for (const cell of this.tree.__getLeavesGlyphAt(wth, at)) {
       for (const glyph of cell.getGlyphsAlive()) {
-        if ((bAt = GrowFunction.intersectAt(wth, glyph)) <= at) {
+        if ((bAt = GrowFunction.__intersectAtGlyphGlyph(wth, glyph)) <= at) {
           foundOverlap = true;
           addTo.add(new GlyphMerge(null, glyph, bAt));
         }
@@ -347,7 +350,7 @@ export class QuadTreeClusterer {
 
     // also check big glyphs separately
     for (const big of bigGlyphs) {
-      if (big != wth && (bAt = GrowFunction.intersectAt(wth, big)) <= at) {
+      if (big !== wth && (bAt = GrowFunction.__intersectAtGlyphGlyph(wth, big)) <= at) {
         foundOverlap = true;
         addTo.add(new GlyphMerge(null, big, bAt));
       }
@@ -364,7 +367,7 @@ export class QuadTreeClusterer {
    * @return The next event to occur, or {@code null} if there are no more
    * events to handle or only a single alive glyph left.
    */
-  private getNextEvent(q: MultiQueue, s: GlobalState): Event {
+  private static getNextEvent(q: MultiQueue, s: GlobalState): Event {
     if (s.numAlive <= 1) {
       return null;
     }
@@ -435,7 +438,7 @@ export class QuadTreeClusterer {
     if (!merged.isBig()) {
       // update queues of big glyphs
       for (const big of s.bigGlyphs) {
-        big.record(new GlyphMerge(big, merged).uncertain());
+        big.record(new UncertainGlyphMerge(new GlyphMerge(big, merged)));
       }
 
       // record merge events and out of cell events
@@ -479,7 +482,7 @@ export class QuadTreeClusterer {
     } else {
       // update queues of big glyphs
       for (const big of s.bigGlyphs) {
-        big.record(new GlyphMerge(big, merged).uncertain());
+        big.record(new UncertainGlyphMerge(new GlyphMerge(big, merged)));
       }
 
       // record merge events and out of cell events
@@ -657,12 +660,12 @@ export class QuadTreeClusterer {
   private initializeBigGlyphEvents(glyph: Glyph, s: GlobalState) {
     // other big glyphs
     for (const big of s.bigGlyphs) {
-      glyph.record(new GlyphMerge(glyph, big).uncertain());
+      glyph.record(new UncertainGlyphMerge(new GlyphMerge(glyph, big)));
     }
 
     // non-big glyphs
-    for (const small of Utils.iterable(this.tree.iteratorGlyphsAlive())) {
-      glyph.record(new GlyphMerge(glyph, small).uncertain());
+    for (const small of this.tree.iteratorGlyphsAlive()) {
+      glyph.record(new UncertainGlyphMerge(new GlyphMerge(glyph, small)));
     }
   }
 
@@ -690,7 +693,7 @@ export class QuadTreeClusterer {
     s.mergedBigGlyph = false;
     // create a merged glyph and ensure that the merged glyph does not
     // overlap other glyphs at this time - repeat until no more overlap
-    let merged: Glyph| null = null;
+    let merged: Glyph | null = null;
     let mergedHC = null;
     let mergedAt = m.getAt();
 

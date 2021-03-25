@@ -5,10 +5,11 @@ import {PrintStream} from "../java/PrintStream";
 import {ConfigurableConsoleHandler} from "../java/ConfigurableConsoleHandler";
 import {QuadTree} from "../datastructure/QuadTree";
 import {QuadTreeClusterer} from "../algorithm/QuadTreeClusterer";
-import {Stats, Timers} from "../utils/Utils";
 import {File} from "../java/File";
 import {CsvIO} from "../io/CsvIO";
 import {PointIO} from "../io/PointIO";
+import {Timers} from "../utils/Timers";
+import {Stats} from "../utils/Stats";
 
 const LOGGER: Logger | null = Constants.LOGGING_ENABLED
   ? Logger.getLogger("QuadTreeClusterer")

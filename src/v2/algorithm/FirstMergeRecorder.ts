@@ -13,9 +13,10 @@ import {GlyphMerge} from "../datastructure/events/GlyphMerge";
 import {Arrays} from "../java/Arrays";
 import {ArrayList, Stream} from "../java/ArrayList";
 import {Collectors} from "../java/Collectors";
-import {Timers, Utils} from "../utils/Utils";
+import {Utils} from "../utils/Utils";
 import {QuadTree} from "../datastructure/QuadTree";
 import {GrowFunction} from "../datastructure/growfunction/GrowFunction";
+import {Timers} from "../utils/Timers";
 
 function getLogger() {
   let l: Logger | null;

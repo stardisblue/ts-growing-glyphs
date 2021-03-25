@@ -5,11 +5,12 @@ import { UncertainQueue } from './queues/UncertainQueue';
 import { PriorityQueue } from '../java/PriorityQueue';
 import { GlyphMerge } from './events/GlyphMerge';
 import { OutOfCell } from './events/OutOfCell';
-import { Stats, Utils } from '../utils/Utils';
+import { Utils } from '../utils/Utils';
 import { UncertainGlyphMerge } from './events/UncertainGlyphMerge';
 import { Level, Logger } from '../java/Logger';
 import { MultiQueue } from './queues/MultiQueue';
 import { Stat } from '../utils/Stat';
+import {Stats} from "../utils/Stats";
 
 function isNNN(args: any[]): args is [number, number, number] {
   return (

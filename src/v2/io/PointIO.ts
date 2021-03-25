@@ -2,10 +2,10 @@ import { Level, Logger } from '../java/Logger';
 import { Constants } from '../utils/Constants';
 import { QuadTree } from '../datastructure/QuadTree';
 import { File, FileOutputStream } from '../java/File';
-import { Timers } from '../utils/Utils';
 import { Scanner } from '../java/Scanner';
 import { Glyph } from '../datastructure/Glyph';
 import { PrintStream } from '../java/PrintStream';
+import {Timers} from "../utils/Timers";
 
 export class PointIO {
   private static readonly LOGGER: Logger | null = Constants.LOGGING_ENABLED

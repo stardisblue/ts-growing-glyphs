@@ -1,12 +1,6 @@
 import {isRectangle2D, Rectangle2D} from "../java/Rectangle2D";
 import {StringBuilder} from "../java/StringBuilder";
 import {ArrayList} from "../java/ArrayList";
-import {Level, Logger} from "../java/Logger";
-import {Pattern} from "../java/Pattern";
-import {Comparator} from "./Comparator";
-import {Entry, HashMap} from "../java/HashMap";
-import {Stat} from "./Stat";
-import {Timer} from "./Timer";
 
 export class Utils {
   /**
@@ -142,7 +136,7 @@ export class Utils {
       private callCount: number = 0;
 
       [Symbol.iterator](): Iterator<T> {
-        if (++this.callCount == 1) {
+        if (++this.callCount === 1) {
           return iterator;
         }
         // can only be iterated once
@@ -153,7 +147,7 @@ export class Utils {
        * @deprecated useless in js
        */
       iterator(): Iterator<T> {
-        if (++this.callCount == 1) {
+        if (++this.callCount === 1) {
           return iterator;
         }
         // can only be iterated once
@@ -286,267 +280,11 @@ export function String__length(v: string) {
   return v.length;
 }
 
-export class Stats {
-  private static readonly TAG_REGEX: Pattern = Pattern.compile(
-    /^\[([a-z]+)]\s+/
-  );
-
-  /**
-   * Map of stat names to objects recording full stat information.
-   */
-  private static readonly stats: HashMap<string, Stat> = new HashMap();
-
-  static count(name: string);
-  static count(name: string, bool: boolean);
-  static count(name: string, bool?: boolean) {
-    if (bool !== undefined) {
-      this.__countStringBoolean(name, bool);
-    }
-    this.__countString(name);
-  }
-
-  static __countString(name: string) {
-    this.record("[count] " + name, 1);
-  }
-
-  static __countStringBoolean(name: string, bool: boolean) {
-    this.record("[perc] " + name, bool ? 1 : 0);
-  }
-
-  static get(name: string): Stat {
-    if (!this.stats.containsKey(name)) {
-      this.stats.put(name, new Stat(0));
-    }
-    return this.stats.get(name);
-  }
-
-  static log(name: string, logger: Logger) {
-    if (!this.stats.containsKey(name)) {
-      return;
-    }
-    this.stats.get(name).log(logger, name);
-  }
-
-  static logAll(logger: Logger) {
-    logger.log(Level.FINE, "");
-    logger.log(Level.FINE, "STATS");
-    const padTo = this.stats
-      .keySet()
-      .stream()
-      .filter((n) => {
-        const tagMatcher = this.TAG_REGEX.matcher(n);
-        return !tagMatcher.find() || tagMatcher.group(1) !== "perc";
-      })
-      .map((n) => this.TAG_REGEX.matcher(n).replaceAll(""))
-      .max(Comparator.comparingInt(String__length))
-      .get().length;
-    // const f = "%1$-" + padTo + "s";
-
-    const f = (k: string) => k.padEnd(padTo);
-    const toSort = new ArrayList<Entry<string, Stat>>();
-    for (const e of this.stats.entrySet()) {
-      toSort.add(e);
-    }
-    toSort.sort(Comparator.comparing(a => this.noTag(a.getKey())));
-    for (const e of toSort) {
-      const tagMatcher = this.TAG_REGEX.matcher(e.getKey());
-      if (tagMatcher.find()) {
-        const tag = tagMatcher.group(1);
-        const n = f(tagMatcher.replaceAll(""));
-        if (tag === "perc") {
-          e.getValue().logPercentage(logger, n);
-        } else {
-          e.getValue().logCount(logger, n);
-        }
-      } else {
-        e.getValue().log(logger, f(e.getKey()));
-      }
-    }
-  }
-
-  static record(name: string, value: number) {
-    if (this.stats.containsKey(name)) {
-      this.stats.get(name).record(value);
-    } else {
-      const stat = new Stat(value);
-      this.stats.put(name, stat);
-    }
-  }
-
-  static remove(name: string) {
-    this.stats.remove(name);
-  }
-
-  static reset() {
-    this.stats.clear();
-  }
-
-  /**
-   * Given a stat name, return the name without tag.
-   */
-  private static noTag(name: string): string {
-    const tagMatcher = this.TAG_REGEX.matcher(name);
-    if (tagMatcher.find()) {
-      return tagMatcher.replaceAll("").trim();
-    }
-    return name;
-  }
-}
-
 export enum Units {
   NANOSECONDS = 1,
   MICROSECONDS = 1000,
   MILLISECONDS = 1000000,
   SECONDS = 1000000000,
-}
-
-export class Timers {
-  /**
-   * Map of timer names to objects recording full timer information.
-   */
-  private static readonly timers: HashMap<string, Timer> = new HashMap();
-
-  /**
-   * Returns how much time has passed between all start and stop events on
-   * the given timer. When the timer is currently running, that time is
-   * <em>not</em> included in this value.
-   * <p>
-   * Use {@link #in(long, Units)} to convert the value returned by this
-   * function to a specific time unit.
-   *
-   * @param name Name of the timer.
-   * @see #in(long, Units)
-   */
-  static elapsed(name: string): number {
-    if (!this.timers.containsKey(name)) {
-      return -1;
-    }
-    return this.timers.get(name).getElapsedTotal();
-  }
-
-  /**
-   * Returns the given timespan in a given unit.
-   *
-   * @param timeSpan Timespan in nanoseconds.
-   * @param units    Unit to transform into.
-   */
-  static in(timeSpan: number, units: Units): number {
-    return timeSpan / units;
-  }
-
-  /**
-   * Log the time that elapsed to the given logger. This will
-   * {@link Timer#stop() stop} the timer and log its {@link
-    * Timer#getElapsedTotal() total elapsed time}.
-   * <p>
-   * This will log at level {@link Level#FINE}.
-   *
-   * @param name   Name of the timer.
-   * @param logger Logger to log to.
-   * @see Utils.Timers#start(String)
-   */
-  static log(name: string, logger: Logger | null);
-  static log(name: string, logger: Logger | null, level: Level);
-  static log(name: string, logger: Logger | null, level: Level = Level.FINE) {
-    if (!this.timers.containsKey(name)) {
-      return;
-    }
-    this.timers.get(name)!.log(logger, name, level);
-  }
-
-  /**
-   * Log the time that elapsed on all timers recorded so far. This will
-   * {@link Timer#stop() stop} the timers and log their {@link
-    * Timer#getElapsedTotal() total elapsed time}.
-   *
-   * @param logger Logger to log to.
-   */
-  static logAll(logger: Logger) {
-    logger.log(Level.FINE, "");
-    logger.log(Level.FINE, "TIMERS");
-    let seen = false;
-    let best = null;
-    const comparator = Comparator.comparingInt(String__length);
-    for (const s of this.timers.keySet()) {
-      if (!seen || comparator(s, best) > 0) {
-        seen = true;
-        best = s;
-      }
-    }
-    const padTo = (seen ? best : "").length;
-    // const f = "%1$-" + padTo + "s";
-    const f = (k: string) => k.padEnd(padTo);
-    // log entries without section
-    const toSort = new ArrayList<Entry<string, Timer>>();
-    for (const stringTimerEntry of this.timers.entrySet()) {
-      if (!stringTimerEntry.getKey().startsWith("[")) {
-        toSort.add(stringTimerEntry);
-      }
-    }
-    toSort.sort(Entry.comparingByKey());
-    for (const stringTimerEntry of toSort) {
-      stringTimerEntry.getValue().log(logger, f(stringTimerEntry.getKey()));
-    }
-    // log entries in a section
-    const list = new ArrayList<Entry<string, Timer>>();
-    for (const stringTimerEntry of this.timers.entrySet()) {
-      if (stringTimerEntry.getKey().startsWith("[")) {
-        list.add(stringTimerEntry);
-      }
-    }
-    list.sort(Entry.comparingByKey());
-    const timersInSections = list.toArray();
-    let lastSection = "";
-    for (const timersInSection of timersInSections) {
-      const e = timersInSection;
-      const offset = e.getKey().indexOf("]") + 1;
-      const section = e.getKey().substring(0, offset);
-      if (section !== lastSection) {
-        lastSection = section;
-        logger.log(Level.FINE, "");
-        logger.log(Level.FINE, lastSection);
-      }
-      e.getValue().log(logger, f(e.getKey().substring(offset + 1)));
-    }
-  }
-
-  /**
-   * Returns a timestamp that can be used to measure elapsed time.
-   */
-  static now(): number {
-    const [seconds, nano] = process.hrtime();
-    return seconds * 10e9 + nano;
-  }
-
-  /**
-   * Start a new timer with the given name. Overwrites any existing timer
-   * with the same name, so can be used to restart timers too.
-   *
-   * @param name Name of the timer. Used when reading off elapsed time.
-   * @see Utils.Timers#log(String, Logger)
-   */
-  static start(name: string): void {
-    if (this.timers.containsKey(name)) {
-      this.timers.get(name).start();
-    } else {
-      this.timers.put(name, new Timer());
-    }
-  }
-
-  /**
-   * Record time passed since last start event on the given timer. This
-   * time will now be included in {@code getElapsedTotal}. Stopping a
-   * stopped timer has no effect.
-   *
-   * @param name Name of the timer to stop.
-   */
-  public static stop(name: string): void {
-    this.timers.get(name).stop();
-  }
-
-  public static reset(): void {
-    this.timers.clear();
-  }
 }
 
 /**
