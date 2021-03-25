@@ -7426,5 +7426,7 @@ var QuadTreeClusterer = /*#__PURE__*/function () {
 }();
 
 exports.Constants = Constants;
+exports.Glyph = Glyph;
 exports.QuadTree = QuadTree;
 exports.QuadTreeClusterer = QuadTreeClusterer;
+exports.isGlyph = isGlyph;

@@ -7416,4 +7416,4 @@ var QuadTreeClusterer = /*#__PURE__*/function () {
   return QuadTreeClusterer;
 }();
 
-export { Constants, QuadTree, QuadTreeClusterer };
+export { Constants, Glyph, QuadTree, QuadTreeClusterer, isGlyph };

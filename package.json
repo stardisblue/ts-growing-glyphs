@@ -1,6 +1,6 @@
 {
   "name": "ts-growing-glyphs",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "main": "dist/index.cjs.js",
   "module": "dist/index.esm.js",
   "iife": "dist/ts-growing-glyphs.iife.min.js",
@@ -33,6 +33,7 @@
   "scripts": {
     "build:types": "tsc --emitDeclarationOnly",
     "build:js": "rollup -c",
-    "build": "yarn build:js && yarn build:types"
+    "build": "yarn build:js && yarn build:types",
+    "prepublishOnly": "yarn build:js && yarn build:types"
   }
 }
