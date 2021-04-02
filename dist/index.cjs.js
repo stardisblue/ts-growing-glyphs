@@ -2034,6 +2034,8 @@ var _loggers = new Map();
 
 var Logger = /*#__PURE__*/function () {
   function Logger(name) {
+    var level = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : Level.FINE;
+
     _classCallCheck(this, Logger);
 
     _defineProperty(this, "_name", void 0);
@@ -2041,23 +2043,20 @@ var Logger = /*#__PURE__*/function () {
     _defineProperty(this, "level", void 0);
 
     this._name = name;
-    this.level = Level.FINEST;
+    this.level = level;
   }
 
   _createClass(Logger, [{
     key: "isLoggable",
     value: function isLoggable(level) {
       var levelValue = this.level;
-
-      if (level < levelValue || levelValue === Level.OFF) {
-        return false;
-      }
-
-      return true;
+      return !(level < levelValue || levelValue === Level.OFF);
     }
   }, {
     key: "log",
     value: function log(level, msg) {
+      if (!Constants.LOGGING_ENABLED) return null;
+
       if (level >= this.level) {
         var prefix = "";
         var offset = 2;
@@ -3106,7 +3105,7 @@ var Glyph = /*#__PURE__*/function () {
           }
         }
 
-        if (l !== null) {
+        if (Constants.LOGGING_ENABLED && l !== null) {
           l.log(Level.FINEST, "\u2192 merge at ".concat(merge.getAt().toFixed(3), " with ").concat(wth));
         } // we found an event and added it to the queue, return
 
@@ -3138,7 +3137,7 @@ var Glyph = /*#__PURE__*/function () {
       while (!this.outOfCellEvents.isEmpty()) {
         var o = this.outOfCellEvents.poll();
 
-        if (l !== null) {
+        if (Constants.LOGGING_ENABLED && l !== null) {
           l.log(Level.FINEST, "popping ".concat(o, " into the queue"));
         }
 
@@ -3154,7 +3153,7 @@ var Glyph = /*#__PURE__*/function () {
         return true;
       }
 
-      if (l != null) {
+      if (Constants.LOGGING_ENABLED && l !== null) {
         l.log(Level.FINEST, 'no out of cell event to pop');
       }
 
@@ -3691,7 +3690,7 @@ var Timer = /*#__PURE__*/function () {
       var level = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : Level.FINE;
       this.stop();
 
-      if (logger !== null) {
+      if (Constants.LOGGING_ENABLED && logger !== null) {
         logger.log(level, "".concat(name, " took ").concat(Timer["in"](this.totalElapsed, Units.SECONDS).toFixed(2).padStart(5), " seconds (wall clock time").concat(this.count === 1 ? '' : ", ".concat(this.count, " timings"))); // logger.log(level, "{0} took {1} seconds (wall clock time{2})",
         //     new Object[]{name, String.format("%5.2f", Timers.in(
         //     totalElapsed, Units.SECONDS)),
@@ -5465,7 +5464,7 @@ var FirstMerge = /*#__PURE__*/function () {
 
     this.size = 0;
 
-    if (LOGGER$1 !== null) {
+    if (Constants.LOGGING_ENABLED && LOGGER$1 !== null) {
       LOGGER$1.log(Level.FINER, "constructed an empty FirstMerge ####");
     }
   }
@@ -5473,7 +5472,7 @@ var FirstMerge = /*#__PURE__*/function () {
   _createClass(FirstMerge, [{
     key: "accept",
     value: function accept(parent, candidate) {
-      if (LOGGER$1 !== null) {
+      if (Constants.LOGGING_ENABLED && LOGGER$1 !== null) {
         LOGGER$1.log(Level.FINER, "accepting ".concat(candidate, " into ####")); // LOGGER.log(Level.FINER, "accepting {0} into #{1}",
         //     new Object[]{candidate, hashCode()});
       }
@@ -5503,7 +5502,7 @@ var FirstMerge = /*#__PURE__*/function () {
 
       }
 
-      if (LOGGER$1 !== null) {
+      if (Constants.LOGGING_ENABLED && LOGGER$1 !== null) {
         LOGGER$1.log(Level.FINER, "#### now has glyphs ".concat(this.glyphs.toArray().join(", "), " at [").concat(this.at.toArray().join(", "), "]")); // LOGGER.log(Level.FINER, "#{0} now has glyphs {1} at {2}",
         //     new Object[]{
         //     hashCode(),
@@ -5519,7 +5518,7 @@ var FirstMerge = /*#__PURE__*/function () {
   }, {
     key: "combine",
     value: function combine(that) {
-      if (LOGGER$1 != null) {
+      if (Constants.LOGGING_ENABLED && LOGGER$1 !== null) {
         LOGGER$1.log(Level.FINER, "combining #### and ####;\n#### has glyphs ".concat(this.glyphs.toArray().join(", "), " at ").concat(this.at, ";\n#### has glyphs ").concat(that.glyphs.toArray().join(", "), " at ").concat(that.at)); // LOGGER.log(Level.FINER,
         //     "combining #{0} and #{1};\n#{0} has glyphs {2} at {3};\n#{1} has glyphs {4} at {5}",
         //     new Object[]{hashCode(), that.hashCode(),
@@ -5572,7 +5571,7 @@ var FirstMerge = /*#__PURE__*/function () {
         result.size++;
       }
 
-      if (LOGGER$1 !== null) {
+      if (Constants.LOGGING_ENABLED && LOGGER$1 !== null) {
         LOGGER$1.log(Level.FINER, "result #### of merging #### and #### has glyphs ".concat(result.glyphs.toArray().join(", "), " at ").concat(result.at, " (storing in #### now)")); // LOGGER.log(Level.FINER,
         //     "result #{0} of merging #{3} and #{4} has glyphs {1} at {2} (storing in #{3} now)",
         //     new Object[]{
@@ -5720,7 +5719,7 @@ var FirstMergeRecorder = /*#__PURE__*/function () {
             for (_iterator3.s(); !(_step3 = _iterator3.n()).done;) {
               var merge = _step3.value;
 
-              if (LOGGER$1 !== null) {
+              if (Constants.LOGGING_ENABLED && LOGGER$1 !== null) {
                 LOGGER$1.log(Level.FINE, "recorded ".concat(merge));
               }
 
@@ -5779,7 +5778,7 @@ var FirstMergeRecorder = /*#__PURE__*/function () {
 
       return from;
     }(function (from) {
-      if (LOGGER$1 !== null) {
+      if (Constants.LOGGING_ENABLED && LOGGER$1 !== null) {
         LOGGER$1.log(Level.FINE, "recording merges from ".concat(from));
       }
 
@@ -6225,7 +6224,7 @@ var QuadTreeClusterer = /*#__PURE__*/function () {
       // for debugging only: checking the number of glyphs/entities
       var defaultLevel = LOGGER == null ? null : LOGGER.getLevel();
 
-      if (LOGGER != null) {
+      if (Constants.LOGGING_ENABLED && LOGGER !== null) {
         LOGGER.log(Level.FINER, "ENTRY into AgglomerativeClustering#cluster()");
         LOGGER.log(Level.FINE, "clustering using ".concat(Utils.join(" + ", Constants.ROBUST ? "ROBUST" : "", Constants.TRACK && !Constants.ROBUST ? "TRACK" : "", !Constants.ROBUST && !Constants.TRACK ? "FIRST MERGE ONLY" : "", "NO BUCKETING"), " strategy")); // LOGGER.log(Level.FINE, "clustering using {0} strategy", Utils.join(" + ",
         //     (Constants.ROBUST ? "ROBUST" : ""),
@@ -6302,7 +6301,7 @@ var QuadTreeClusterer = /*#__PURE__*/function () {
 
           for (var i = 0; i < glyphs.length; ++i) {
             // add events for when two glyphs in the same cell touch
-            if (LOGGER !== null) LOGGER.log(Level.FINEST, glyphs[i].toString());
+            if (Constants.LOGGING_ENABLED && LOGGER !== null) LOGGER.log(Level.FINEST, glyphs[i].toString());
             this.rec.from(glyphs[i]);
             if (Constants.TIMERS_ENABLED) Timers.start("first merge recording 1");
 
@@ -6337,7 +6336,7 @@ var QuadTreeClusterer = /*#__PURE__*/function () {
             state.glyphSize.record(glyphs[i].getN());
 
             if (!glyphs[i].isAlive()) {
-              if (LOGGER != null) {
+              if (Constants.LOGGING_ENABLED && LOGGER !== null) {
                 LOGGER.log(Level.SEVERE, "unexpected dead glyph in input");
               }
 
@@ -6351,7 +6350,7 @@ var QuadTreeClusterer = /*#__PURE__*/function () {
         _iterator3.f();
       }
 
-      if (LOGGER != null) {
+      if (Constants.LOGGING_ENABLED && LOGGER !== null) {
         LOGGER.log(Level.FINE, "created ".concat(q.size(), " events initially, for ").concat(state.numAlive, " glyphs")); // LOGGER.log(Level.FINE, "created {0} events initially, for {1} glyphs",
         //     new Object[]{q.size(), state.numAlive});
       } // merge glyphs until no pairs to merge remain
@@ -6361,7 +6360,7 @@ var QuadTreeClusterer = /*#__PURE__*/function () {
 
       while ((e = QuadTreeClusterer.getNextEvent(q, state)) !== null) {
         // log on a slightly higher urgency level when one of the glyphs is tracked
-        if (LOGGER !== null) {
+        if (Constants.LOGGING_ENABLED && LOGGER !== null) {
           if (LOGGER.getLevel() > Level.FINER) {
             var _iterator4 = _createForOfIteratorHelper(e.getGlyphs()),
                 _step4;
@@ -6479,10 +6478,10 @@ var QuadTreeClusterer = /*#__PURE__*/function () {
         this.step(); // check ourselves, conditionally
         // reset higher log level for tracked glyphs, if applicable
 
-        if (LOGGER !== null) LOGGER.setLevel(defaultLevel);
+        if (Constants.LOGGING_ENABLED && LOGGER !== null) LOGGER.setLevel(defaultLevel);
       }
 
-      if (LOGGER != null) {
+      if (Constants.LOGGING_ENABLED && LOGGER !== null) {
         if (LOGGER.isLoggable(Level.FINE)) {
           Stats.record("total # works", this.result.getGlyph().getN());
         }
@@ -6524,7 +6523,7 @@ var QuadTreeClusterer = /*#__PURE__*/function () {
       }
 
       if (Constants.TIMERS_ENABLED) Timers.logAll(LOGGER);
-      if (LOGGER != null) LOGGER.log(Level.FINER, "RETURN from AgglomerativeClustering#cluster()");
+      if (Constants.LOGGING_ENABLED && LOGGER !== null) LOGGER.log(Level.FINER, "RETURN from AgglomerativeClustering#cluster()");
       return this;
     }
   }, {
@@ -6743,14 +6742,14 @@ var QuadTreeClusterer = /*#__PURE__*/function () {
       // we take the size of the glyph at that point in time into account
 
       var sideInterval = Side.interval(GrowFunction.sizeAt(glyph, oAt).getBounds2D(), o.getSide());
-      if (LOGGER !== null) LOGGER.log(Level.FINER, "size at border is [".concat(sideInterval, "]")); // Copy the set of neighbors returned, as the neighbors may in fact change
+      if (Constants.LOGGING_ENABLED && LOGGER !== null) LOGGER.log(Level.FINER, "size at border is [".concat(sideInterval, "]")); // Copy the set of neighbors returned, as the neighbors may in fact change
       // while the out of cell event is being handled; inserting the glyph into
       // the neighboring cells can cause a split to occur and the neighbors to
       // update. All of that is avoided by making a copy now.
 
       var neighbors = cell.getNeighbors(o.getSide()).copy(); // const neighbors = new ArrayList(cell.getNeighbors(o.getSide()));
 
-      if (LOGGER !== null) {
+      if (Constants.LOGGING_ENABLED && LOGGER !== null) {
         LOGGER.log(Level.FINEST, "growing out of ".concat(o.getSide(), " of ").concat(o.getCell(), " into")); // LOGGER.log(Level.FINEST, "growing out of {1} of {0} into",
         //     new Object[]{o.getCell(), o.getSide();});
       }
@@ -6761,16 +6760,16 @@ var QuadTreeClusterer = /*#__PURE__*/function () {
       try {
         for (_iterator16.s(); !(_step16 = _iterator16.n()).done;) {
           var neighbor = _step16.value;
-          if (LOGGER !== null) LOGGER.log(Level.FINEST, neighbor.toString()); // ensure that glyph actually grows into this neighbor
+          if (Constants.LOGGING_ENABLED && LOGGER !== null) LOGGER.log(Level.FINEST, neighbor.toString()); // ensure that glyph actually grows into this neighbor
 
           if (!Utils.intervalsOverlap(Side.interval(neighbor.getSide(oppositeSide), oppositeSide), sideInterval)) {
-            if (LOGGER !== null) LOGGER.log(Level.FINEST, "→ but not at this point in time, so ignoring");
+            if (Constants.LOGGING_ENABLED && LOGGER !== null) LOGGER.log(Level.FINEST, "→ but not at this point in time, so ignoring");
             continue;
           } // ensure that glyph was not in this cell yet
 
 
           if (neighbor.getGlyphs() !== null && neighbor.getGlyphs().contains(glyph)) {
-            if (LOGGER !== null) LOGGER.log(Level.FINEST, "→ but was already in there, so ignoring"); // there might still be other interesting events for this glyph
+            if (Constants.LOGGING_ENABLED && LOGGER !== null) LOGGER.log(Level.FINEST, "→ but was already in there, so ignoring"); // there might still be other interesting events for this glyph
 
             glyph.popOutOfCellInto(q, LOGGER);
             continue;
@@ -6798,7 +6797,7 @@ var QuadTreeClusterer = /*#__PURE__*/function () {
 
             grownInto = neighbor.__getLeavesGlyphAt(glyph, oAt);
 
-            if (LOGGER !== null && LOGGER.isLoggable(Level.FINE)) {
+            if (Constants.LOGGING_ENABLED && LOGGER !== null && LOGGER.isLoggable(Level.FINE)) {
               var _iterator17 = _createForOfIteratorHelper(neighbor.__getLeaves()),
                   _step17;
 
@@ -6872,7 +6871,7 @@ var QuadTreeClusterer = /*#__PURE__*/function () {
                     } // now, actually create an OUT_OF_CELL event
 
 
-                    if (LOGGER !== null) //     LOGGER.log(Level.FINEST, "→ out of {0} of {2} at {1}",
+                    if (Constants.LOGGING_ENABLED && LOGGER !== null) //     LOGGER.log(Level.FINEST, "→ out of {0} of {2} at {1}",
                       //          new Object[]{side, at, in});
                       LOGGER.log(Level.FINEST, "\u2192 out of ".concat(side, " of ").concat(_iin, " at ").concat(at.toFixed(3)));
                     glyph.record(new OutOfCell(glyph, _iin, side, at));
@@ -6990,7 +6989,7 @@ var QuadTreeClusterer = /*#__PURE__*/function () {
             _iterator23.f();
           }
 
-          if (LOGGER !== null) {
+          if (Constants.LOGGING_ENABLED && LOGGER !== null) {
             LOGGER.log(Level.FINEST, "handling nested " + m);
           } // create a merged glyph, update clustering
 
@@ -7081,7 +7080,7 @@ var QuadTreeClusterer = /*#__PURE__*/function () {
             _iterator24.f();
           }
 
-          if (LOGGER !== null) {
+          if (Constants.LOGGING_ENABLED && LOGGER !== null) {
             LOGGER.log(Level.FINEST, "\u2192 merged glyph is ".concat(merged));
           }
         }
@@ -7178,7 +7177,7 @@ var QuadTreeClusterer = /*#__PURE__*/function () {
       if (!merged.isBig()) {
         this.tree.insert(merged, mergedAt);
 
-        if (LOGGER !== null) {
+        if (Constants.LOGGING_ENABLED && LOGGER !== null) {
           LOGGER.log(Level.FINER, "inserted merged glyph into ".concat(merged.getCells().size(), " cells"));
         }
       }
@@ -7285,7 +7284,7 @@ var QuadTreeClusterer = /*#__PURE__*/function () {
 
               if (ooe.getAt() > at) {
                 merged.record(ooe);
-                if (LOGGER !== null) LOGGER.log(Level.FINEST, "\u2192 out of ".concat(side, " of ").concat(cell, " at ").concat(ooe.getAt().toFixed(3)));
+                if (Constants.LOGGING_ENABLED && LOGGER !== null) LOGGER.log(Level.FINEST, "\u2192 out of ".concat(side, " of ").concat(cell, " at ").concat(ooe.getAt().toFixed(3)));
               }
             }
           } catch (err) {
@@ -7388,9 +7387,9 @@ var QuadTreeClusterer = /*#__PURE__*/function () {
       try {
         for (_iterator34.s(); !(_step34 = _iterator34.n()).done;) {
           var big = _step34.value;
-          LOGGER === null || LOGGER === void 0 ? void 0 : LOGGER.log(Level.FINER, "searching for uncertain merge on ".concat(big));
+          if (Constants.LOGGING_ENABLED && LOGGER !== null) LOGGER.log(Level.FINER, "searching for uncertain merge on ".concat(big));
           var bEvt = big.peekUncertain();
-          LOGGER === null || LOGGER === void 0 ? void 0 : LOGGER.log(Level.FINER, "found ".concat(bEvt));
+          if (Constants.LOGGING_ENABLED && LOGGER !== null) LOGGER === null || LOGGER === void 0 ? void 0 : LOGGER.log(Level.FINER, "found ".concat(bEvt));
 
           if (event == null || bEvt != null && bEvt.getAt() < event.getAt()) {
             event = bEvt.getGlyphMerge();

@@ -7,7 +7,7 @@ export declare class Logger {
     private constructor();
     static getLogger(name: string): Logger;
     static setPrintStream(ps: PrintStream): void;
-    log(level: Level, msg: string): void;
+    log(level: Level, msg: string): any;
     /**
      * @deprecated use #level
      */
