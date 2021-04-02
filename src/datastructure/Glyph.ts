@@ -385,7 +385,7 @@ export class Glyph {
           wth.trackedBy.add(this);
         }
       }
-      if (l !== null) {
+      if (Constants.LOGGING_ENABLED && l !== null) {
         l.log(Level.FINEST, `→ merge at ${merge.getAt().toFixed(3)} with ${wth}`);
       }
       // we found an event and added it to the queue, return
@@ -413,7 +413,7 @@ export class Glyph {
     let added = false;
     while (!this.outOfCellEvents.isEmpty()) {
       const o = this.outOfCellEvents.poll();
-      if (l !== null) {
+      if (Constants.LOGGING_ENABLED && l !== null) {
         l.log(Level.FINEST, `popping ${o} into the queue`);
       }
       q.add(o);
@@ -425,7 +425,7 @@ export class Glyph {
     if (Constants.ROBUST && added) {
       return true;
     }
-    if (l != null) {
+    if (Constants.LOGGING_ENABLED && l !== null) {
       l.log(Level.FINEST, 'no out of cell event to pop');
     }
     return false;

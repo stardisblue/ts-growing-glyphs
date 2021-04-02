@@ -13,7 +13,8 @@ export class PointIO {
     : null;
 
   public static async read(file: File, tree: QuadTree) {
-    PointIO.LOGGER?.log(Level.FINE, 'ENTRY into PointIO#read()');
+    if(Constants.LOGGING_ENABLED)
+      PointIO.LOGGER?.log(Level.FINE, 'ENTRY into PointIO#read()');
     let sum = 0;
     // Locales.push(Locale.US);
     if (Constants.TIMERS_ENABLED) {
@@ -42,7 +43,8 @@ export class PointIO {
       Timers.log('reading file', PointIO.LOGGER, Level.INFO);
     }
     // Locales.pop();
-    PointIO.LOGGER.log(Level.FINE, 'RETURN from PointIO#read()');
+    if (Constants.LOGGING_ENABLED)
+      PointIO.LOGGER.log(Level.FINE, 'RETURN from PointIO#read()');
     return sum;
   }
 

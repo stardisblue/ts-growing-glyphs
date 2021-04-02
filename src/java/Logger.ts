@@ -6,19 +6,16 @@ const _loggers = new Map<string, Logger>();
 export class Logger {
   isLoggable(level: Level) {
     let levelValue = this.level;
-    if (level < levelValue || levelValue === Level.OFF) {
-      return false;
-    }
-    return true;
+    return !(level < levelValue || levelValue === Level.OFF);
   }
 
   private _name: any;
   static _ps?: PrintStream;
   private level: number;
 
-  private constructor(name: string) {
+  private constructor(name: string, level = Level.FINE) {
     this._name = name;
-    this.level = Level.FINEST;
+    this.level = level;
   }
 
   static getLogger(name: string) {
@@ -38,6 +35,7 @@ export class Logger {
   }
 
   log(level: Level, msg: string) {
+    if (!Constants.LOGGING_ENABLED) return null;
     if (level >= this.level) {
       let prefix = "";
       let offset = 2;

@@ -1,6 +1,7 @@
 import { Units } from './Utils';
 import { Level, Logger } from '../java/Logger';
 import { System } from '../java/System';
+import {Constants} from "./Constants";
 
 export class Timer {
   private count: number;
@@ -75,7 +76,7 @@ export class Timer {
    */
   public log(logger: Logger | null, name: string, level: Level = Level.FINE): void {
     this.stop();
-    if (logger !== null) {
+    if (Constants.LOGGING_ENABLED && logger !== null) {
       logger.log(
         level,
         `${name} took ${Timer.in(this.totalElapsed, Units.SECONDS)

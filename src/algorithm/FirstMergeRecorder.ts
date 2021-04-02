@@ -68,13 +68,13 @@ export class FirstMerge {
       this.glyphs.add(new ArrayList(1));
     }
     this.size = 0;
-    if (LOGGER !== null) {
+    if (Constants.LOGGING_ENABLED && LOGGER !== null) {
       LOGGER.log(Level.FINER, `constructed an empty FirstMerge ####`);
     }
   }
 
   public accept(parent: FirstMergeRecorder, candidate: Glyph): void {
-    if (LOGGER !== null) {
+    if (Constants.LOGGING_ENABLED && LOGGER !== null) {
       LOGGER.log(Level.FINER, `accepting ${candidate} into ####`);
       // LOGGER.log(Level.FINER, "accepting {0} into #{1}",
       //     new Object[]{candidate, hashCode()});
@@ -100,7 +100,7 @@ export class FirstMerge {
       }
       // if at > this.at.get(i), try next i...
     }
-    if (LOGGER !== null) {
+    if (Constants.LOGGING_ENABLED && LOGGER !== null) {
       LOGGER.log(
         Level.FINER,
         `#### now has glyphs ${this.glyphs.toArray().join(", ")} at [${this.at.toArray().join(", ")}]`
@@ -119,7 +119,7 @@ export class FirstMerge {
   }
 
   combine(that: FirstMerge) {
-    if (LOGGER != null) {
+    if (Constants.LOGGING_ENABLED && LOGGER !==null) {
       LOGGER.log(
         Level.FINER,
         `combining #### and ####;
@@ -175,7 +175,7 @@ export class FirstMerge {
       }
       result.size++;
     }
-    if (LOGGER !== null) {
+    if (Constants.LOGGING_ENABLED && LOGGER !== null) {
       LOGGER.log(
         Level.FINER,
         `result #### of merging #### and #### has glyphs ${result.glyphs.toArray().join(", ")} at ${result.at} (storing in #### now)`
@@ -365,7 +365,7 @@ export class FirstMergeRecorder {
     } else {
       while ((merges = this.merge.pop(this._from)) !== null) {
         for (const merge of merges) {
-          if (LOGGER !== null) {
+          if (Constants.LOGGING_ENABLED && LOGGER !== null) {
             LOGGER.log(Level.FINE, `recorded ${merge}`);
           }
           this._from.__recordG(merge);
@@ -403,7 +403,7 @@ export class FirstMergeRecorder {
    * @param from Glyph with which merges should be recorded starting now.
    */
   public from(from: Glyph): void {
-    if (LOGGER !== null) {
+    if (Constants.LOGGING_ENABLED && LOGGER !== null) {
       LOGGER.log(Level.FINE, `recording merges from ${from}`);
     }
     this._from = from;

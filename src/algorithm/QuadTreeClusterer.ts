@@ -81,7 +81,7 @@ export class QuadTreeClusterer {
     // for debugging only: checking the number of glyphs/entities
     const defaultLevel = LOGGER == null ? null : LOGGER.getLevel();
 
-    if (LOGGER != null) {
+    if (Constants.LOGGING_ENABLED && LOGGER !== null) {
       LOGGER.log(Level.FINER, "ENTRY into AgglomerativeClustering#cluster()");
       LOGGER.log(
         Level.FINE,
@@ -142,7 +142,7 @@ export class QuadTreeClusterer {
       const glyphs = leaf.getGlyphs()!.toArray();
       for (let i = 0; i < glyphs.length; ++i) {
         // add events for when two glyphs in the same cell touch
-        if (LOGGER !== null) LOGGER.log(Level.FINEST, glyphs[i].toString());
+        if (Constants.LOGGING_ENABLED && LOGGER !== null) LOGGER.log(Level.FINEST, glyphs[i].toString());
         this.rec.from(glyphs[i]);
         if (Constants.TIMERS_ENABLED) Timers.start("first merge recording 1");
         this.rec.__recordGlyphNumberNumber(glyphs, i + 1, glyphs.length);
@@ -164,14 +164,14 @@ export class QuadTreeClusterer {
         state.numAlive++;
         state.glyphSize.record(glyphs[i].getN());
         if (!glyphs[i].isAlive()) {
-          if (LOGGER != null) {
+          if (Constants.LOGGING_ENABLED && LOGGER !== null) {
             LOGGER.log(Level.SEVERE, "unexpected dead glyph in input");
           }
           return null;
         }
       }
     }
-    if (LOGGER != null) {
+    if (Constants.LOGGING_ENABLED && LOGGER !== null) {
       LOGGER.log(
         Level.FINE,
         `created ${q.size()} events initially, for ${state.numAlive} glyphs`
@@ -183,7 +183,7 @@ export class QuadTreeClusterer {
     let e: Event;
     while ((e = QuadTreeClusterer.getNextEvent(q, state)) !== null) {
       // log on a slightly higher urgency level when one of the glyphs is tracked
-      if (LOGGER !== null) {
+      if (Constants.LOGGING_ENABLED && LOGGER !== null) {
         if (LOGGER.getLevel() > Level.FINER) {
           for (const glyph of e.getGlyphs()) {
             if (glyph.track) {
@@ -253,9 +253,9 @@ export class QuadTreeClusterer {
 
       // check ourselves, conditionally
       // reset higher log level for tracked glyphs, if applicable
-      if (LOGGER !== null) LOGGER.setLevel(defaultLevel);
+      if (Constants.LOGGING_ENABLED && LOGGER !== null) LOGGER.setLevel(defaultLevel);
     }
-    if (LOGGER != null) {
+    if (Constants.LOGGING_ENABLED && LOGGER !== null) {
       if (LOGGER.isLoggable(Level.FINE)) {
         Stats.record("total # works", this.result.getGlyph().getN());
       }
@@ -304,7 +304,7 @@ export class QuadTreeClusterer {
       Stats.logAll(LOGGER);
     }
     if (Constants.TIMERS_ENABLED) Timers.logAll(LOGGER);
-    if (LOGGER != null)
+    if (Constants.LOGGING_ENABLED && LOGGER !== null)
       LOGGER.log(Level.FINER, "RETURN from AgglomerativeClustering#cluster()");
     return this;
   }
@@ -399,9 +399,11 @@ export class QuadTreeClusterer {
     // check the big glyphs
     let bigGlyph = null;
     for (const big of s.bigGlyphs) {
-      LOGGER?.log(Level.FINER, `searching for uncertain merge on ${big}`);
+      if(Constants.LOGGING_ENABLED && LOGGER !== null)
+        LOGGER.log(Level.FINER, `searching for uncertain merge on ${big}`);
       const bEvt = big.peekUncertain();
-      LOGGER?.log(Level.FINER, `found ${bEvt}`);
+      if(Constants.LOGGING_ENABLED &&  LOGGER !== null)
+        LOGGER?.log(Level.FINER, `found ${bEvt}`);
       if (event == null || (bEvt != null && bEvt.getAt() < event.getAt())) {
         event = bEvt.getGlyphMerge();
         bigGlyph = big;
@@ -535,7 +537,7 @@ export class QuadTreeClusterer {
       GrowFunction.sizeAt(glyph, oAt).getBounds2D(),
       o.getSide()
     );
-    if (LOGGER !== null)
+    if (Constants.LOGGING_ENABLED && LOGGER !== null)
       LOGGER.log(Level.FINER, `size at border is [${sideInterval}]`);
     // Copy the set of neighbors returned, as the neighbors may in fact change
     // while the out of cell event is being handled; inserting the glyph into
@@ -543,7 +545,7 @@ export class QuadTreeClusterer {
     // update. All of that is avoided by making a copy now.
     const neighbors = cell.getNeighbors(o.getSide()).copy();
     // const neighbors = new ArrayList(cell.getNeighbors(o.getSide()));
-    if (LOGGER !== null) {
+    if (Constants.LOGGING_ENABLED && LOGGER !== null) {
       LOGGER.log(
         Level.FINEST,
         `growing out of ${o.getSide()} of ${o.getCell()} into`
@@ -552,7 +554,7 @@ export class QuadTreeClusterer {
       //     new Object[]{o.getCell(), o.getSide();});
     }
     for (const neighbor of neighbors) {
-      if (LOGGER !== null) LOGGER.log(Level.FINEST, neighbor.toString());
+      if (Constants.LOGGING_ENABLED && LOGGER !== null) LOGGER.log(Level.FINEST, neighbor.toString());
 
       // ensure that glyph actually grows into this neighbor
       if (
@@ -561,7 +563,7 @@ export class QuadTreeClusterer {
           sideInterval
         )
       ) {
-        if (LOGGER !== null)
+        if (Constants.LOGGING_ENABLED && LOGGER !== null)
           LOGGER.log(
             Level.FINEST,
             "→ but not at this point in time, so ignoring"
@@ -574,7 +576,7 @@ export class QuadTreeClusterer {
         neighbor.getGlyphs() !== null &&
         neighbor.getGlyphs().contains(glyph)
       ) {
-        if (LOGGER !== null)
+        if (Constants.LOGGING_ENABLED && LOGGER !== null)
           LOGGER.log(Level.FINEST, "→ but was already in there, so ignoring");
         // there might still be other interesting events for this glyph
         glyph.popOutOfCellInto(q, LOGGER);
@@ -604,7 +606,7 @@ export class QuadTreeClusterer {
         // 4. continue with making events in appropriate cells instead
         //    of `neighbor` or all glyphs associated with `neighbor`
         grownInto = neighbor.__getLeavesGlyphAt(glyph, oAt);
-        if (LOGGER !== null && LOGGER.isLoggable(Level.FINE)) {
+        if (Constants.LOGGING_ENABLED && LOGGER !== null && LOGGER.isLoggable(Level.FINE)) {
           for (const iin of neighbor.__getLeaves()) {
             Stats.record("glyphs per cell", iin.getGlyphsAlive().size());
           }
@@ -640,7 +642,7 @@ export class QuadTreeClusterer {
               continue;
             }
             // now, actually create an OUT_OF_CELL event
-            if (LOGGER !== null)
+            if (Constants.LOGGING_ENABLED && LOGGER !== null)
               //     LOGGER.log(Level.FINEST, "→ out of {0} of {2} at {1}",
               //          new Object[]{side, at, in});
               LOGGER.log(Level.FINEST, `→ out of ${side} of ${iin} at ${at.toFixed(3)}`);
@@ -711,7 +713,7 @@ export class QuadTreeClusterer {
           }
         }
 
-        if (LOGGER !== null) {
+        if (Constants.LOGGING_ENABLED && LOGGER !== null) {
           LOGGER.log(Level.FINEST, "handling nested " + m);
         }
 
@@ -768,7 +770,7 @@ export class QuadTreeClusterer {
           }
         }
 
-        if (LOGGER !== null) {
+        if (Constants.LOGGING_ENABLED && LOGGER !== null) {
           LOGGER.log(Level.FINEST, `→ merged glyph is ${merged}`);
         }
       }
@@ -822,7 +824,7 @@ export class QuadTreeClusterer {
     merged.setBig(s.glyphSize);
     if (!merged.isBig()) {
       this.tree.insert(merged, mergedAt);
-      if (LOGGER !== null) {
+      if (Constants.LOGGING_ENABLED && LOGGER !== null) {
         LOGGER.log(
           Level.FINER,
           `inserted merged glyph into ${merged.getCells().size()} cells`
@@ -909,7 +911,7 @@ export class QuadTreeClusterer {
         const ooe = new OutOfCell(merged, cell, side);
         if (ooe.getAt() > at) {
           merged.record(ooe);
-          if (LOGGER !== null)
+          if (Constants.LOGGING_ENABLED && LOGGER !== null)
             LOGGER.log(
               Level.FINEST,
               `→ out of ${side} of ${cell} at ${ooe.getAt().toFixed(3)}`

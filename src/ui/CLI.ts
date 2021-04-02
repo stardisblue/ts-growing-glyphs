@@ -73,7 +73,7 @@ export class CLI {
 
     // cluster!
     try {
-      if (LOGGER !== null) {
+      if (Constants.LOGGING_ENABLED && LOGGER !== null) {
         LOGGER.log(
           Level.FINE,
           "clustering using the QuadTree Clusterer algorithm"
