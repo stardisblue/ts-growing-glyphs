@@ -416,7 +416,7 @@ export class QuadTreeClusterer {
       if (event === queueEvent) {
         q.poll();
       } else {
-        bigGlyph.pollUncertain();
+        bigGlyph?.pollUncertain();
       }
     }
 
