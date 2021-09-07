@@ -7408,7 +7408,9 @@ var QuadTreeClusterer = /*#__PURE__*/function () {
         if (event === queueEvent) {
           q.poll();
         } else {
-          bigGlyph.pollUncertain();
+          var _bigGlyph;
+
+          (_bigGlyph = bigGlyph) === null || _bigGlyph === void 0 ? void 0 : _bigGlyph.pollUncertain();
         }
       }
 
